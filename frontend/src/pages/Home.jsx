@@ -9,30 +9,50 @@ const categories = [
 
 const Home = () => (
   <>
-    <header className="bg-dark text-light py-5 mb-4">
+    <header className="premium-hero mb-5">
       <div className="container">
         <div className="row align-items-center">
-          <div className="col-md-6 mb-3 mb-md-0">
-            <h1 className="display-4 fw-bold mb-4">Men's Clothing Classics</h1>
-            <p className="lead mb-4">Shop premium shirts, pants, and blazers. Dress smart, look sharp, stand out.</p>
-            <Link to="/products/category/shirts" className="btn btn-lg btn-primary fw-bold">Shop Now</Link>
+          <div className="col-md-6 mb-4 mb-md-0">
+            <h1>Men's Clothing Classics</h1>
+            <p>Shop premium shirts, pants, and blazers. Dress smart, look sharp, stand out.</p>
+            <Link to="/products/category/shirts" className="premium-btn premium-btn-primary">Shop Now</Link>
           </div>
           <div className="col-md-6 d-flex justify-content-md-end justify-content-center">
-            <img src="https://images.pexels.com/photos/5322201/pexels-photo-5322201.jpeg?auto=compress&w=600&h=480&fit=crop" alt="Men's clothing hero" className="img-fluid rounded shadow-lg" style={{maxHeight: 320}}/>
+            <img 
+              src="https://images.pexels.com/photos/5322201/pexels-photo-5322201.jpeg?auto=compress&w=600&h=480&fit=crop" 
+              alt="Men's clothing hero" 
+              className="img-fluid rounded" 
+              style={{
+                maxHeight: 400,
+                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.2)',
+                borderRadius: '0.75rem'
+              }}
+            />
           </div>
         </div>
       </div>
     </header>
     <section className="container mb-5">
-      <h2 className="mb-4 text-center">Shop By Category</h2>
-      <div className="row justify-content-center">
+      <div className="premium-section-header">
+        <h2>Shop By Category</h2>
+        <p>Discover our curated collection of premium men's clothing</p>
+      </div>
+      <div className="row justify-content-center g-4">
         {categories.map((cat) => (
-          <div className="col-md-4 mb-4" key={cat.name}>
-            <div className="card h-100 border-0 shadow-sm">
-              <img src={cat.img} alt={cat.name} className="card-img-top" style={{height: 220, objectFit: 'cover'}}/>
+          <div className="col-md-4" key={cat.name}>
+            <div className="premium-product-card">
+              <img 
+                src={cat.img} 
+                alt={cat.name} 
+                style={{
+                  height: 280, 
+                  objectFit: 'cover',
+                  width: '100%'
+                }}
+              />
               <div className="card-body d-flex flex-column align-items-center">
-                <h5 className="mb-3">{cat.name}</h5>
-                <Link to={cat.path} className="btn btn-outline-primary w-100">Explore {cat.name}</Link>
+                <h5 className="mb-3" style={{fontWeight: 600}}>{cat.name}</h5>
+                <Link to={cat.path} className="premium-btn premium-btn-secondary w-100 text-center text-decoration-none">Explore {cat.name}</Link>
               </div>
             </div>
           </div>

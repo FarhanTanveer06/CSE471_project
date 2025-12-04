@@ -148,4 +148,29 @@ Then open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ---
 
+## 🚀 Deployment
+
+This application is configured for deployment:
+- **Backend**: Render
+- **Frontend**: Vercel
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions.
+
+### Environment Variables
+
+#### Backend (Render)
+```
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_strong_random_secret_key
+PORT=5000
+FRONTEND_URL=https://your-vercel-app.vercel.app
+```
+
+#### Frontend (Vercel)
+```
+VITE_API_URL=https://your-backend-url.onrender.com/api
+```
+
+---
+
 **Enjoy building!**
