@@ -32,8 +32,18 @@ exports.getProductById = async (req, res) => {
 // Admin only
 exports.createProduct = async (req, res) => {
   try {
-    const { name, price, category, imageUrl, description } = req.body;
-    const product = new Product({ name, price, category, imageUrl, description });
+    const { name, price, category, type, images, description, fabricType, gsm, availability } = req.body;
+    const product = new Product({ 
+      name, 
+      price, 
+      category, 
+      type,
+      images, 
+      description, 
+      fabricType, 
+      gsm, 
+      availability 
+    });
     await product.save();
     res.status(201).json(product);
   } catch (err) {
