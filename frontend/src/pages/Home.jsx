@@ -25,7 +25,7 @@ const Home = () => (
               style={{
                 maxHeight: 400,
                 boxShadow: '0 20px 40px rgba(0, 0, 0, 0.2)',
-                borderRadius: 'var(--radius)'
+                borderRadius: '0.75rem'
               }}
             />
           </div>
@@ -51,7 +51,7 @@ const Home = () => (
                 }}
               />
               <div className="card-body d-flex flex-column align-items-center">
-                <h5 className="mb-3" style={{fontWeight: 'var(--font-weight-semibold)'}}>{cat.name}</h5>
+                <h5 className="mb-3" style={{fontWeight: 600}}>{cat.name}</h5>
                 <Link to={cat.path} className="premium-btn premium-btn-secondary w-100 text-center text-decoration-none">Explore {cat.name}</Link>
               </div>
             </div>

@@ -64,6 +64,12 @@ const ProductDetails = () => {
     ? product.images 
     : (product.imageUrl ? [product.imageUrl] : []);
 
+  // Fallback placeholder image if no images are available
+  const fallbackImage = 'https://via.placeholder.com/600x500?text=No+Image+Available';
+  const mainImageSrc = productImages.length > 0 
+    ? (productImages[selectedImageIndex] || productImages[0])
+    : fallbackImage;
+
   return (
     <div className="product-details-container">
       <div className="container py-5">
@@ -73,7 +79,7 @@ const ProductDetails = () => {
             <div className="product-image-gallery">
               {/* Main Image */}
               <img 
-                src={productImages[selectedImageIndex] || productImages[0]} 
+                src={mainImageSrc} 
                 className="product-main-image" 
                 alt={product.name}
               />

@@ -71,7 +71,7 @@ const Products = () => {
       </div>
       {products.length === 0 ? (
         <div className="text-center py-5">
-          <p style={{color: 'var(--muted-foreground)', fontSize: '1.125rem'}}>No products found.</p>
+          <p style={{color: '#6c757d', fontSize: '1.125rem'}}>No products found.</p>
         </div>
       ) : (
         <div className="row g-4">
@@ -91,8 +91,8 @@ const Products = () => {
                     />
                     {prod.availability === 0 && (
                       <span className="premium-badge position-absolute top-0 start-0 m-2" style={{
-                        background: 'var(--destructive)',
-                        color: 'var(--destructive-foreground)'
+                        background: '#e74c3c',
+                        color: '#ffffff'
                       }}>
                         Out of Stock
                       </span>
@@ -108,7 +108,7 @@ const Products = () => {
                       )}
                     </div>
                     {prod.description && (
-                      <p className="small" style={{color: 'var(--muted-foreground)', marginTop: 'auto'}}>{prod.description}</p>
+                      <p className="small" style={{color: '#6c757d', marginTop: 'auto'}}>{prod.description}</p>
                     )}
                   </div>
                 </div>
