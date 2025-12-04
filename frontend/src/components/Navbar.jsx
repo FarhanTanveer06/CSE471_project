@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import '../styles/navbar.css';
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
@@ -12,9 +13,9 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <nav className="navbar navbar-expand-lg premium-navbar">
       <div className="container-fluid">
-        <Link className="navbar-brand fw-bold fs-3" to="/">Smart Dress</Link>
+        <Link className="navbar-brand" to="/">Smart Dress</Link>
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
           <span className="navbar-toggler-icon" />
         </button>
@@ -37,7 +38,7 @@ const Navbar = () => {
             ) : (
               <>
                 <li className="nav-item"><Link className="btn btn-outline-light me-2" to="/login">Login</Link></li>
-                <li className="nav-item"><Link className="btn btn-light text-primary" to="/signup">Sign Up</Link></li>
+                <li className="nav-item"><Link className="btn btn-light" to="/signup">Sign Up</Link></li>
               </>
             )}
           </ul>

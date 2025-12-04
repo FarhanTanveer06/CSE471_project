@@ -62,47 +62,53 @@ const Products = () => {
   }
 
   return (
-    <div className="container py-4">
-      <div className="mb-4 p-4 bg-light rounded-3 shadow-sm text-center">
-        <h2 className="fw-bold display-5 text-capitalize mb-2">
+    <div className="container py-5">
+      <div className="premium-section-header mb-5">
+        <h2 className="text-capitalize">
           {category ? `${category}` : 'All Products'}
         </h2>
-        <span className="text-secondary">Discover the latest in men&apos;s fashion</span>
+        <p>Discover the latest in men&apos;s fashion</p>
       </div>
       {products.length === 0 ? (
         <div className="text-center py-5">
-          <p className="text-muted">No products found.</p>
+          <p style={{color: 'var(--muted-foreground)', fontSize: '1.125rem'}}>No products found.</p>
         </div>
       ) : (
         <div className="row g-4">
           {products.map((prod) => (
             <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={prod._id}>
               <Link to={`/products/${prod._id}`} className="text-decoration-none text-reset">
-                <div className="card h-100 shadow border-0 product-card-hover">
+                <div className="premium-product-card">
                   <div className="position-relative">
                     <img 
                       src={getProductImage(prod)} 
-                      className="card-img-top" 
                       alt={prod.name} 
-                      style={{height: 220, objectFit: 'cover'}} 
+                      style={{
+                        height: 280, 
+                        objectFit: 'cover',
+                        width: '100%'
+                      }} 
                     />
                     {prod.availability === 0 && (
-                      <span className="badge position-absolute top-0 start-0 m-2 bg-danger">
+                      <span className="premium-badge position-absolute top-0 start-0 m-2" style={{
+                        background: 'var(--destructive)',
+                        color: 'var(--destructive-foreground)'
+                      }}>
                         Out of Stock
                       </span>
                     )}
                   </div>
                   <div className="card-body">
-                    <h5 className="card-title mb-2">{prod.name}</h5>
-                    <div className="text-primary fw-bold mb-2">${prod.price}</div>
+                    <h5 className="card-title">{prod.name}</h5>
+                    <div className="card-price">${prod.price}</div>
                     <div className="mb-2">
-                      <span className="badge bg-secondary me-1 text-capitalize">{prod.category}</span>
+                      <span className="premium-badge premium-badge-secondary me-1">{prod.category}</span>
                       {prod.type && (
-                        <span className="badge bg-info text-capitalize">{prod.type}</span>
+                        <span className="premium-badge premium-badge-accent">{prod.type}</span>
                       )}
                     </div>
                     {prod.description && (
-                      <p className="card-text small text-muted">{prod.description}</p>
+                      <p className="small" style={{color: 'var(--muted-foreground)', marginTop: 'auto'}}>{prod.description}</p>
                     )}
                   </div>
                 </div>
