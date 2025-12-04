@@ -13,7 +13,7 @@ yarn.lock
 
 # Environment variables
 backend/.env
-backend/.env.example
+
 .env.local
 .env.development.local
 .env.test.local
