@@ -19,16 +19,16 @@ const Home = () => {
       buttonLink: '/products'
     },
     {
-      image: 'https://images.pexels.com/photos/2983464/pexels-photo-2983464.jpeg?auto=compress&w=1920&h=800&fit=crop',
+      image: 'https://www.divaonline.com.pk/wp-content/uploads/2023/04/Wahaj-Ali-Cover-1170x600.jpg?auto=compress&w=1920&h=800&fit=crop',
       title: 'Premium Quality',
       subtitle: 'Discover our curated collection of premium men\'s fashion',
       buttonText: 'Explore Collection',
       buttonLink: '/products'
     },
     {
-      image: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&w=1920&h=800&fit=crop',
-      title: 'Style That Matters',
-      subtitle: 'Elevate your wardrobe with our sophisticated designs',
+      image: 'https://www.styledbysally.com.au/wp-content/uploads/2017/08/skintoneguide.jpg?auto=compress&w=1920&h=800&fit=crop',
+      title: 'Choose what suits you',
+      subtitle: 'Match the outfit according to your skin tone',
       buttonText: 'Shop Now',
       buttonLink: '/products'
     }
