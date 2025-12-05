@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../services/api';
 import '../styles/products.css';
@@ -8,10 +8,12 @@ const Products = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const searchInputRef = useRef(null);
 
   // Filter and search states
   const [showFilters, setShowFilters] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(category || '');
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedSize, setSelectedSize] = useState('');
@@ -30,6 +32,16 @@ const Products = () => {
     setSelectedCategory(category || '');
   }, [category]);
 
+  // Debounce search term - update debouncedSearchTerm after user stops typing for 500ms
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Fetch products when filters change (using debouncedSearchTerm instead of searchTerm)
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -37,7 +49,7 @@ const Products = () => {
         const params = new URLSearchParams();
         
         if (selectedCategory) params.append('category', selectedCategory);
-        if (searchTerm) params.append('search', searchTerm);
+        if (debouncedSearchTerm) params.append('search', debouncedSearchTerm);
         if (selectedColor) params.append('color', selectedColor);
         if (selectedSize) params.append('size', selectedSize);
         if (minPrice) params.append('minPrice', minPrice);
@@ -49,7 +61,22 @@ const Products = () => {
         setProducts(response.data);
         setError(null);
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to load products');
+        // Provide more detailed error messages
+        let errorMessage = 'Failed to load products';
+        
+        if (err.code === 'ERR_NETWORK' || err.message === 'Network Error') {
+          errorMessage = 'Unable to connect to the server. Please make sure the backend server is running on http://localhost:5000';
+        } else if (err.response) {
+          // Server responded with error status
+          errorMessage = err.response.data?.message || `Server error: ${err.response.status} ${err.response.statusText}`;
+        } else if (err.request) {
+          // Request made but no response received
+          errorMessage = 'No response from server. Please check if the backend is running.';
+        } else {
+          errorMessage = err.message || 'An unexpected error occurred';
+        }
+        
+        setError(errorMessage);
         console.error('Error fetching products:', err);
       } finally {
         setLoading(false);
@@ -57,7 +84,7 @@ const Products = () => {
     };
 
     fetchProducts();
-  }, [selectedCategory, searchTerm, selectedColor, selectedSize, minPrice, maxPrice, sortBy]);
+  }, [selectedCategory, debouncedSearchTerm, selectedColor, selectedSize, minPrice, maxPrice, sortBy]);
 
   const handleResetFilters = () => {
     setSearchTerm('');
@@ -81,21 +108,66 @@ const Products = () => {
     return 'https://via.placeholder.com/400x300?text=No+Image';
   };
 
-  if (loading) {
-    return (
-      <div className="container py-5 text-center">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
+  if (error && !products.length) {
     return (
       <div className="container py-5">
         <div className="alert alert-danger" role="alert">
-          {error}
+          <h5 className="alert-heading">Error Loading Products</h5>
+          <p className="mb-3">{error}</p>
+          <hr />
+          <p className="mb-2"><strong>Troubleshooting:</strong></p>
+          <ul className="mb-3">
+            <li>Make sure the backend server is running on port 5000</li>
+            <li>Check that MongoDB is connected and running</li>
+            <li>Verify the API URL in your environment variables</li>
+            <li>Check the browser console for more details</li>
+          </ul>
+          <button 
+            className="btn btn-primary" 
+            onClick={() => {
+              setError(null);
+              setLoading(true);
+              // Trigger a refetch by updating a dependency
+              const fetchProducts = async () => {
+                try {
+                  const params = new URLSearchParams();
+                  
+                  if (selectedCategory) params.append('category', selectedCategory);
+                  if (debouncedSearchTerm) params.append('search', debouncedSearchTerm);
+                  if (selectedColor) params.append('color', selectedColor);
+                  if (selectedSize) params.append('size', selectedSize);
+                  if (minPrice) params.append('minPrice', minPrice);
+                  if (maxPrice) params.append('maxPrice', maxPrice);
+                  if (sortBy) params.append('sortBy', sortBy);
+
+                  const endpoint = `/products?${params.toString()}`;
+                  const response = await api.get(endpoint);
+                  setProducts(response.data);
+                  setError(null);
+                } catch (err) {
+                  let errorMessage = 'Failed to load products';
+                  
+                  if (err.code === 'ERR_NETWORK' || err.message === 'Network Error') {
+                    errorMessage = 'Unable to connect to the server. Please make sure the backend server is running on http://localhost:5000';
+                  } else if (err.response) {
+                    errorMessage = err.response.data?.message || `Server error: ${err.response.status} ${err.response.statusText}`;
+                  } else if (err.request) {
+                    errorMessage = 'No response from server. Please check if the backend is running.';
+                  } else {
+                    errorMessage = err.message || 'An unexpected error occurred';
+                  }
+                  
+                  setError(errorMessage);
+                  console.error('Error fetching products:', err);
+                } finally {
+                  setLoading(false);
+                }
+              };
+              fetchProducts();
+            }}
+          >
+            Retry
+          </button>
         </div>
       </div>
     );
@@ -115,13 +187,24 @@ const Products = () => {
         <div className="row g-3 align-items-center">
           {/* Search Bar */}
           <div className="col-12 col-md-6 col-lg-4">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search products..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+            <div className="position-relative">
+              <input
+                ref={searchInputRef}
+                type="text"
+                className="form-control"
+                placeholder="Search products..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                autoComplete="off"
+              />
+              {loading && searchTerm && (
+                <div className="position-absolute top-50 end-0 translate-middle-y pe-3">
+                  <div className="spinner-border spinner-border-sm text-primary" role="status" style={{ width: '1rem', height: '1rem' }}>
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Filter Button */}
@@ -250,8 +333,18 @@ const Products = () => {
         </div>
       )}
 
-      {/* Products Grid */}
-      {products.length === 0 ? (
+      {/* Loading indicator for initial load */}
+      {loading && products.length === 0 ? (
+        <div className="text-center py-5">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      ) : error ? (
+        <div className="alert alert-warning" role="alert">
+          {error}
+        </div>
+      ) : products.length === 0 ? (
         <div className="text-center py-5">
           <p style={{color: '#6c757d', fontSize: '1.125rem'}}>No products found.</p>
         </div>
