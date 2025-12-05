@@ -31,6 +31,13 @@ const Home = () => {
       subtitle: 'Match the outfit according to your skin tone',
       buttonText: 'Shop Now',
       buttonLink: '/products'
+    }, 
+    {
+      image: 'https://images.lifestyleasia.com/wp-content/uploads/sites/7/2022/09/18135144/diwali-outfit-500x500.jpg?auto=compress&w=1920&h=800&fit=crop',
+      title: 'Make your eid special',
+      subtitle: 'Eid 2026 collection',
+      buttonText: 'Shop Now',
+      buttonLink: '/products'
     }
   ];
 
