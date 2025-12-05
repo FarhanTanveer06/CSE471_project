@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import '../styles/home.css';
 
 const categories = [
-  { name: 'Shirts', path: '/products/category/shirts', img: 'https://images.pexels.com/photos/2983464/pexels-photo-2983464.jpeg?auto=compress&w=600&h=360&fit=crop' },
-  { name: 'Pants', path: '/products/category/pants', img: 'https://images.pexels.com/photos/5322211/pexels-photo-5322211.jpeg?auto=compress&w=600&h=360&fit=crop' },
-  { name: 'Blazers', path: '/products/category/blazers', img: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&w=600&h=360&fit=crop' },
+  { name: 'Shirts', path: '/products/category/shirts', img: 'https://imagescdn.thecollective.in/img/app/product/1/1135748-20378220.jpg?auto=compress&w=600&h=360&fit=crop' },
+  { name: 'Pants', path: '/products/category/pants', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUYRLMZLVfXKXas3Shl-QUB2tu8lnyN1e-Hw&s?auto=compress&w=600&h=360&fit=crop' },
+  { name: 'Blazers', path: '/products/category/blazers', img: 'https://m.media-amazon.com/images/I/41-aOk7vPSL._AC_SX679_.jpg?auto=compress&w=600&h=360&fit=crop' },
 ];
 
 const Home = () => {
@@ -116,17 +117,15 @@ const Home = () => {
         {categories.map((cat) => (
           <div className="col-md-4" key={cat.name}>
             <div className="premium-product-card">
-              <img 
-                src={cat.img} 
-                alt={cat.name} 
-                style={{
-                  height: 280, 
-                  objectFit: 'cover',
-                  width: '100%'
-                }}
-              />
+              <div className="category-image-container">
+                <img 
+                  src={cat.img} 
+                  alt={cat.name} 
+                  className="category-image"
+                />
+              </div>
               <div className="card-body d-flex flex-column align-items-center">
-                <h5 className="mb-3" style={{fontWeight: 600}}>{cat.name}</h5>
+                <h5 className="mb-3 category-card-title">{cat.name}</h5>
                 <Link to={cat.path} className="premium-btn premium-btn-secondary w-100 text-center text-decoration-none">Explore {cat.name}</Link>
               </div>
             </div>
