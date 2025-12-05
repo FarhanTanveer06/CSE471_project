@@ -354,15 +354,11 @@ const Products = () => {
             <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={prod._id}>
               <Link to={`/products/${prod._id}`} className="text-decoration-none text-reset">
                 <div className="premium-product-card">
-                  <div className="position-relative">
+                  <div className="product-image-container">
                     <img 
                       src={getProductImage(prod)} 
                       alt={prod.name} 
-                      style={{
-                        height: 280, 
-                        objectFit: 'cover',
-                        width: '100%'
-                      }} 
+                      className="product-image"
                     />
                     {prod.availability === 0 && (
                       <span className="premium-badge position-absolute top-0 start-0 m-2" style={{
