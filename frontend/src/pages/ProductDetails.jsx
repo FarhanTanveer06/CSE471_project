@@ -126,7 +126,7 @@ const ProductDetails = () => {
               )}
               {product.color && (
                 <span className="product-badge" style={{
-                  background: '#3498db',
+                  background: '#636668ff',
                   color: '#ffffff'
                 }}>{product.color}</span>
               )}
@@ -146,8 +146,8 @@ const ProductDetails = () => {
                       style={{
                         minWidth: '50px',
                         padding: '0.5rem 1rem',
-                        border: selectedSize === size ? '2px solid #9b59b6' : '1px solid #dee2e6',
-                        background: selectedSize === size ? '#9b59b6' : '#ffffff',
+                        border: selectedSize === size ? '2px solid #2b2f5dff' : '1px solid #dee2e6',
+                        background: selectedSize === size ? '#211942ff' : '#ffffff',
                         color: selectedSize === size ? '#ffffff' : '#333',
                         borderRadius: '4px',
                         cursor: 'pointer',
