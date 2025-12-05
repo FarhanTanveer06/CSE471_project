@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 const categories = [
@@ -7,31 +7,99 @@ const categories = [
   { name: 'Blazers', path: '/products/category/blazers', img: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&w=600&h=360&fit=crop' },
 ];
 
-const Home = () => (
-  <>
-    <header className="premium-hero mb-5">
-      <div className="container">
-        <div className="row align-items-center">
-          <div className="col-md-6 mb-4 mb-md-0">
-            <h1>Men's Clothing Classics</h1>
-            <p>Shop premium shirts, pants, and blazers. Dress smart, look sharp, stand out.</p>
-            <Link to="/products/category/shirts" className="premium-btn premium-btn-primary">Shop Now</Link>
-          </div>
-          <div className="col-md-6 d-flex justify-content-md-end justify-content-center">
-            <img 
-              src="https://images.pexels.com/photos/5322201/pexels-photo-5322201.jpeg?auto=compress&w=600&h=480&fit=crop" 
-              alt="Men's clothing hero" 
-              className="img-fluid rounded" 
-              style={{
-                maxHeight: 400,
-                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.2)',
-                borderRadius: '0.75rem'
-              }}
-            />
+const Home = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const slides = [
+    {
+      image: 'https://media.glamour.com/photos/68cc39f779746685f58c84e2/16:9/w_2034,h_1144,c_limit/photo_3_3000.jpg?auto=compress&w=1920&h=800&fit=crop',
+      title: 'Men\'s Clothing Classics',
+      subtitle: 'Shop premium shirts, pants, and blazers. Dress smart, look sharp, stand out.',
+      buttonText: 'Shop Now',
+      buttonLink: '/products'
+    },
+    {
+      image: 'https://images.pexels.com/photos/2983464/pexels-photo-2983464.jpeg?auto=compress&w=1920&h=800&fit=crop',
+      title: 'Premium Quality',
+      subtitle: 'Discover our curated collection of premium men\'s fashion',
+      buttonText: 'Explore Collection',
+      buttonLink: '/products'
+    },
+    {
+      image: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&w=1920&h=800&fit=crop',
+      title: 'Style That Matters',
+      subtitle: 'Elevate your wardrobe with our sophisticated designs',
+      buttonText: 'Shop Now',
+      buttonLink: '/products'
+    }
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 5000); // Change slide every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [slides.length]);
+
+  const goToSlide = (index) => {
+    setCurrentSlide(index);
+  };
+
+  const goToPrevious = () => {
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  };
+
+  const goToNext = () => {
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
+  };
+
+  return (
+    <>
+      {/* Image Slideshow Section */}
+      <section className="hero-slideshow mb-5">
+        <div className="slideshow-container">
+          {slides.map((slide, index) => (
+            <div
+              key={index}
+              className={`slide ${index === currentSlide ? 'active' : ''}`}
+              style={{ backgroundImage: `url(${slide.image})` }}
+            >
+              <div className="slide-overlay">
+                <div className="container">
+                  <div className="slide-content">
+                    <h1>{slide.title}</h1>
+                    <p>{slide.subtitle}</p>
+                    <Link to={slide.buttonLink} className="premium-btn premium-btn-primary">
+                      {slide.buttonText}
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+          
+          {/* Navigation Arrows */}
+          <button className="slideshow-nav slideshow-prev" onClick={goToPrevious} aria-label="Previous slide">
+            &#8249;
+          </button>
+          <button className="slideshow-nav slideshow-next" onClick={goToNext} aria-label="Next slide">
+            &#8250;
+          </button>
+
+          {/* Slide Indicators */}
+          <div className="slideshow-indicators">
+            {slides.map((_, index) => (
+              <button
+                key={index}
+                className={`indicator ${index === currentSlide ? 'active' : ''}`}
+                onClick={() => goToSlide(index)}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
           </div>
         </div>
-      </div>
-    </header>
+      </section>
     <section className="container mb-5">
       <div className="premium-section-header">
         <h2>Shop By Category</h2>
@@ -60,6 +128,7 @@ const Home = () => (
       </div>
     </section>
   </>
-);
+  );
+};
 
 export default Home;
