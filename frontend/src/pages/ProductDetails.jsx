@@ -9,6 +9,7 @@ const ProductDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [selectedSize, setSelectedSize] = useState('');
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -115,13 +116,53 @@ const ProductDetails = () => {
               </span>
             </div>
 
-            {/* Category and Type */}
+            {/* Category, Type, and Color */}
             <div className="product-badges">
               <span className="product-badge category">{product.category}</span>
               {product.type && (
                 <span className="product-badge type">{product.type}</span>
               )}
+              {product.color && (
+                <span className="product-badge" style={{
+                  background: '#3498db',
+                  color: '#ffffff'
+                }}>{product.color}</span>
+              )}
             </div>
+
+            {/* Size Selection */}
+            {product.sizes && product.sizes.length > 0 && (
+              <div className="product-size-selection mt-3">
+                <h5 className="mb-2">Select Size:</h5>
+                <div className="size-buttons d-flex flex-wrap gap-2">
+                  {product.sizes.map((size) => (
+                    <button
+                      key={size}
+                      type="button"
+                      className={`size-button ${selectedSize === size ? 'selected' : ''}`}
+                      onClick={() => setSelectedSize(size)}
+                      style={{
+                        minWidth: '50px',
+                        padding: '0.5rem 1rem',
+                        border: selectedSize === size ? '2px solid #9b59b6' : '1px solid #dee2e6',
+                        background: selectedSize === size ? '#9b59b6' : '#ffffff',
+                        color: selectedSize === size ? '#ffffff' : '#333',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
+                {selectedSize && (
+                  <p className="text-success mt-2 mb-0">
+                    <small>Selected: {selectedSize}</small>
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* Description */}
             {product.description && (
@@ -161,6 +202,18 @@ const ProductDetails = () => {
                         <td>{product.type}</td>
                       </tr>
                     )}
+                    {product.color && (
+                      <tr>
+                        <td>Color:</td>
+                        <td>{product.color}</td>
+                      </tr>
+                    )}
+                    {product.sizes && product.sizes.length > 0 && (
+                      <tr>
+                        <td>Available Sizes:</td>
+                        <td>{product.sizes.join(', ')}</td>
+                      </tr>
+                    )}
                     <tr>
                       <td>Stock:</td>
                       <td>
@@ -178,9 +231,21 @@ const ProductDetails = () => {
             <div className="product-actions">
               <button 
                 className="product-action-btn primary" 
-                disabled={!isAvailable}
+                disabled={!isAvailable || (product.sizes && product.sizes.length > 0 && !selectedSize)}
+                onClick={() => {
+                  if (product.sizes && product.sizes.length > 0 && !selectedSize) {
+                    alert('Please select a size');
+                  } else {
+                    // TODO: Implement add to cart functionality with selectedSize
+                    console.log('Add to cart:', { productId: product._id, size: selectedSize });
+                  }
+                }}
               >
-                {isAvailable ? 'Add to Cart' : 'Out of Stock'}
+                {isAvailable 
+                  ? (product.sizes && product.sizes.length > 0 && !selectedSize 
+                      ? 'Select Size to Add to Cart' 
+                      : 'Add to Cart')
+                  : 'Out of Stock'}
               </button>
               <button className="product-action-btn secondary">
                 Add to Wishlist
