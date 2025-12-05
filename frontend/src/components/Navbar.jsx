@@ -33,7 +33,7 @@ const Navbar = () => {
   return (
     <nav className="navbar navbar-expand-lg premium-navbar">
       <div className="container-fluid">
-        <Link className="navbar-brand" to="/" onClick={() => handleNavClick('/')}>Smart Dress</Link>
+        <Link className="navbar-brand" to="/" onClick={() => handleNavClick('/')}>Men's Kart</Link>
         <button 
           className="navbar-toggler" 
           type="button" 
