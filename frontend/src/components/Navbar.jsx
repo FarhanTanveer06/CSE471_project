@@ -51,6 +51,9 @@ const Navbar = () => {
             <li className="nav-item"><Link className="nav-link" to="/products/category/shirts" onClick={() => handleNavClick('/products/category/shirts')}>Shirts</Link></li>
             <li className="nav-item"><Link className="nav-link" to="/products/category/pants" onClick={() => handleNavClick('/products/category/pants')}>Pants</Link></li>
             <li className="nav-item"><Link className="nav-link" to="/products/category/blazers" onClick={() => handleNavClick('/products/category/blazers')}>Blazers</Link></li>
+            {user && (
+              <li className="nav-item"><Link className="nav-link" to="/mixup-and-see" onClick={() => handleNavClick('/mixup-and-see')}>Mixup & See</Link></li>
+            )}
             {user && user.role === 'admin' && (
               <li className="nav-item"><Link className="nav-link" to="/admin" onClick={() => handleNavClick('/admin')}>Admin Dashboard</Link></li>
             )}

@@ -136,12 +136,13 @@ const Cart = () => {
                     <div key={item._id} className="cart-item mb-3 p-3 border rounded">
                       <div className="row align-items-center">
                         <div className="col-md-2">
-                          <img
-                            src={product.images?.[0] || 'https://via.placeholder.com/150'}
-                            alt={product.name}
-                            className="img-fluid rounded"
-                            style={{ width: '100%', height: '120px', objectFit: 'cover' }}
-                          />
+                          <div className="cart-item-image-container">
+                            <img
+                              src={product.images?.[0] || product.imageUrl || 'https://via.placeholder.com/150'}
+                              alt={product.name}
+                              className="cart-item-image"
+                            />
+                          </div>
                         </div>
                         <div className="col-md-4">
                           <h5 className="mb-1">
