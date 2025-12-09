@@ -14,6 +14,7 @@ const ProductDetails = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState('');
   const [addingToCart, setAddingToCart] = useState(false);
+  const [addingToPreview, setAddingToPreview] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -105,6 +106,27 @@ const ProductDetails = () => {
       console.error('Error adding to cart:', err);
     } finally {
       setAddingToCart(false);
+    }
+  };
+
+  const handleAddToPreview = async () => {
+    if (!user) {
+      alert('Please login to add items to preview');
+      navigate('/login');
+      return;
+    }
+
+    try {
+      setAddingToPreview(true);
+      await api.post('/preview/add', {
+        productId: product._id
+      });
+      alert('Item added to preview successfully!');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to add item to preview');
+      console.error('Error adding to preview:', err);
+    } finally {
+      setAddingToPreview(false);
     }
   };
 
@@ -281,6 +303,15 @@ const ProductDetails = () => {
                         : 'Add to Cart')
                     : 'Out of Stock'}
               </button>
+              {user && (
+                <button 
+                  className="product-action-btn secondary"
+                  disabled={addingToPreview}
+                  onClick={handleAddToPreview}
+                >
+                  {addingToPreview ? 'Adding...' : 'Add to Preview'}
+                </button>
+              )}
               <button className="product-action-btn secondary">
                 Add to Wishlist
               </button>
