@@ -1,15 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
 import '../styles/productDetails.css';
 
 const ProductDetails = () => {
   const { id } = useParams();
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState('');
+  const [addingToCart, setAddingToCart] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -70,6 +74,39 @@ const ProductDetails = () => {
   const mainImageSrc = productImages.length > 0 
     ? (productImages[selectedImageIndex] || productImages[0])
     : fallbackImage;
+
+  const handleAddToCart = async () => {
+    if (!user) {
+      alert('Please login to add items to cart');
+      navigate('/login');
+      return;
+    }
+
+    if (product.sizes && product.sizes.length > 0 && !selectedSize) {
+      alert('Please select a size');
+      return;
+    }
+
+    if (!isAvailable) {
+      alert('Product is out of stock');
+      return;
+    }
+
+    try {
+      setAddingToCart(true);
+      await api.post('/cart/add', {
+        productId: product._id,
+        quantity: 1,
+        size: selectedSize || product.sizes?.[0] || 'M'
+      });
+      alert('Item added to cart successfully!');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to add item to cart');
+      console.error('Error adding to cart:', err);
+    } finally {
+      setAddingToCart(false);
+    }
+  };
 
   return (
     <div className="product-details-container">
@@ -233,21 +270,16 @@ const ProductDetails = () => {
             <div className="product-actions">
               <button 
                 className="product-action-btn primary" 
-                disabled={!isAvailable || (product.sizes && product.sizes.length > 0 && !selectedSize)}
-                onClick={() => {
-                  if (product.sizes && product.sizes.length > 0 && !selectedSize) {
-                    alert('Please select a size');
-                  } else {
-                    // TODO: Implement add to cart functionality with selectedSize
-                    console.log('Add to cart:', { productId: product._id, size: selectedSize });
-                  }
-                }}
+                disabled={!isAvailable || (product.sizes && product.sizes.length > 0 && !selectedSize) || addingToCart}
+                onClick={handleAddToCart}
               >
-                {isAvailable 
-                  ? (product.sizes && product.sizes.length > 0 && !selectedSize 
-                      ? 'Select Size to Add to Cart' 
-                      : 'Add to Cart')
-                  : 'Out of Stock'}
+                {addingToCart 
+                  ? 'Adding...' 
+                  : isAvailable 
+                    ? (product.sizes && product.sizes.length > 0 && !selectedSize 
+                        ? 'Select Size to Add to Cart' 
+                        : 'Add to Cart')
+                    : 'Out of Stock'}
               </button>
               <button className="product-action-btn secondary">
                 Add to Wishlist

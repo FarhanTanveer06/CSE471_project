@@ -58,6 +58,11 @@ const Navbar = () => {
           <ul className="navbar-nav mb-2 mb-lg-0">
             {user ? (
               <>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/cart" onClick={() => handleNavClick('/cart')}>
+                    Cart
+                  </Link>
+                </li>
                 <li className="nav-item nav-link text-light">Hi, {user.name}</li>
                 <li className="nav-item"><button className="btn btn-outline-light ms-2" onClick={handleLogout}>Logout</button></li>
               </>

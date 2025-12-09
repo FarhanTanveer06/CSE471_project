@@ -1,0 +1,33 @@
+.cart-item {
+  background: #ffffff;
+  transition: box-shadow 0.2s;
+}
+
+.cart-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cart-summary {
+  background: #f8f9fa;
+  position: sticky;
+  top: 20px;
+}
+
+.cart-summary h5 {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.cart-items .input-group {
+  max-width: 150px;
+}
+
+.cart-items .input-group .form-control {
+  border-left: 0;
+  border-right: 0;
+}
+
+.cart-items .input-group .btn {
+  border-radius: 0;
+}
+
