@@ -34,6 +34,11 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: 'Invalid phone number or password' });
     }
 
+    // Check if user is banned
+    if (user.banned) {
+      return res.status(403).json({ message: 'Your account has been banned. Please contact support.' });
+    }
+
     // Compare password
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
