@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
 import '../styles/mixupAndSee.css';
@@ -66,25 +66,32 @@ const MixupAndSee = () => {
     }
   };
 
-  useEffect(() => {
-    const topItems = previewItems.filter(item => {
+  // Filter items once using useMemo
+  const topItems = useMemo(() => {
+    return previewItems.filter(item => {
       if (!item) return false;
       const product = item.productId || item;
       return product && product.category && product.category !== 'pants';
     });
-    const bottomItems = previewItems.filter(item => {
+  }, [previewItems]);
+
+  const bottomItems = useMemo(() => {
+    return previewItems.filter(item => {
       if (!item) return false;
       const product = item.productId || item;
       return product && product.category && product.category === 'pants';
     });
+  }, [previewItems]);
 
+  // Reset indices if they exceed array length
+  useEffect(() => {
     if (currentTopIndex >= topItems.length && topItems.length > 0) {
       setCurrentTopIndex(0);
     }
     if (currentBottomIndex >= bottomItems.length && bottomItems.length > 0) {
       setCurrentBottomIndex(0);
     }
-  }, [previewItems, currentTopIndex, currentBottomIndex]);
+  }, [previewItems, currentTopIndex, currentBottomIndex, topItems.length, bottomItems.length]);
 
   const handleAddToCart = async (product, itemId) => {
     if (!product.productId) return;
@@ -114,16 +121,6 @@ const MixupAndSee = () => {
     }
   };
 
-  const topItems = previewItems.filter(item => {
-    if (!item) return false;
-    const product = item.productId || item;
-    return product && product.category && product.category !== 'pants';
-  });
-  const bottomItems = previewItems.filter(item => {
-    if (!item) return false;
-    const product = item.productId || item;
-    return product && product.category && product.category === 'pants';
-  });
   if (authLoading || loading) {
     return (
       <div className="mixup-container">
