@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 import '../styles/home.css';
 
 const categories = [
@@ -9,6 +10,7 @@ const categories = [
 ];
 
 const Home = () => {
+  const { user } = useContext(AuthContext);
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const slides = [
@@ -109,6 +111,16 @@ const Home = () => {
         </div>
       </section>
     <section className="container mb-5">
+      {user && (
+        <div className="alert alert-info mb-4" role="alert">
+          <h4 className="alert-heading">
+            {user.role === 'admin' ? 'Hi admin' : 'Welcome'}, {user.name}!
+          </h4>
+          {user.role === 'admin' && (
+            <p className="mb-0">You have administrative access. Manage products from the Admin Dashboard.</p>
+          )}
+        </div>
+      )}
       <div className="premium-section-header">
         <h2>Shop By Category</h2>
         <p>Discover our curated collection of premium men's clothing</p>

@@ -22,14 +22,37 @@ exports.signup = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { phone, password } = req.body;
+    
+    // Validate input
+    if (!phone || !password) {
+      return res.status(400).json({ message: 'Phone and password are required' });
+    }
+
+    // Find user by phone
     const user = await User.findOne({ phone });
-    if (!user) return res.status(400).json({ message: 'Invalid credentials' });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid phone number or password' });
+    }
+
+    // Compare password
     const isMatch = await user.comparePassword(password);
-    if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid phone number or password' });
+    }
+
+    // Generate token and return user data
     const token = toToken(user);
-    res.status(200).json({ token, user: { name: user.name, phone: user.phone, role: user.role } });
+    res.status(200).json({ 
+      token, 
+      user: { 
+        name: user.name, 
+        phone: user.phone, 
+        role: user.role 
+      } 
+    });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error('Login error:', err);
+    res.status(500).json({ message: 'Server error during login' });
   }
 };
 

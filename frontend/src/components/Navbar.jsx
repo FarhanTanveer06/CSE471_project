@@ -66,7 +66,9 @@ const Navbar = () => {
                     Cart
                   </Link>
                 </li>
-                <li className="nav-item nav-link text-light">Hi, {user.name}</li>
+                <li className="nav-item nav-link text-light">
+                  {user.role === 'admin' ? 'Hi admin' : 'Hi'}, {user.name}
+                </li>
                 <li className="nav-item"><button className="btn btn-outline-light ms-2" onClick={handleLogout}>Logout</button></li>
               </>
             ) : (
