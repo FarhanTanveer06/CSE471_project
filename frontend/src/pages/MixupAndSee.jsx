@@ -48,6 +48,24 @@ const MixupAndSee = () => {
     }
   };
 
+  const handleClearPreview = async () => {
+    if (previewItems.length === 0) return;
+    
+    if (!window.confirm('Are you sure you want to clear all items from preview?')) {
+      return;
+    }
+
+    try {
+      await api.delete('/preview/clear');
+      setPreviewItems([]);
+      setCurrentTopIndex(0);
+      setCurrentBottomIndex(0);
+      alert('All items cleared from preview successfully!');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to clear preview');
+    }
+  };
+
   useEffect(() => {
     const topItems = previewItems.filter(item => {
       if (!item) return false;
@@ -289,6 +307,19 @@ const MixupAndSee = () => {
             )}
           </div>
         </div>
+
+        {/* Clear All Button - Only shows when there are items */}
+        {previewItems.length > 0 && (
+          <div className="text-center py-2" style={{ backgroundColor: '#fff', borderTop: '1px solid #e0e0e0' }}>
+            <button
+              className="btn btn-danger btn-sm"
+              onClick={handleClearPreview}
+              style={{ margin: '0.5rem' }}
+            >
+              Clear All Items
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
