@@ -7,11 +7,10 @@ import Products from './pages/Products';
 import ProductDetails from './pages/ProductDetails';
 import Cart from './pages/Cart';
 import MixupAndSee from './pages/MixupAndSee';
+import AdminDashboard from './pages/AdminDashboard';
 import AuthProvider from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
-
-const AdminDashboard = () => <h2>Admin Dashboard (protected)</h2>;
 
 const App = () => (
   <AuthProvider>

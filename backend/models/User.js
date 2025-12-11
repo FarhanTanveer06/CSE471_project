@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
   phone: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: { type: String, enum: ['user', 'admin'], default: 'user' },
+  banned: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now }
 });
 
