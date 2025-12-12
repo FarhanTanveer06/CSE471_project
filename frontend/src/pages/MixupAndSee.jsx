@@ -9,6 +9,7 @@ const MixupAndSee = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [addingToCart, setAddingToCart] = useState({});
+  const [selectedSizes, setSelectedSizes] = useState({}); // Track selected size per item
   const [currentTopIndex, setCurrentTopIndex] = useState(0);
   const [currentBottomIndex, setCurrentBottomIndex] = useState(0);
 
@@ -97,21 +98,20 @@ const MixupAndSee = () => {
     if (!product.productId) return;
 
     const productData = product.productId;
-    const defaultSize = productData.sizes && productData.sizes.length > 0 
-      ? productData.sizes[0] 
-      : 'M';
 
     if (productData.availability <= 0) {
       alert('Product is out of stock');
       return;
     }
 
+    const sizeToUse = selectedSizes[itemId];
+
     try {
       setAddingToCart(prev => ({ ...prev, [itemId]: true }));
       await api.post('/cart/add', {
         productId: productData._id,
         quantity: 1,
-        size: defaultSize
+        size: sizeToUse
       });
       alert('Item added to cart successfully!');
     } catch (err) {
@@ -146,18 +146,54 @@ const MixupAndSee = () => {
   }
 
   const handleTopPrevious = () => {
+    // Clear selected size for current item before navigating
+    if (topItems.length > 0 && topItems[currentTopIndex]) {
+      const currentItem = topItems[currentTopIndex];
+      setSelectedSizes(prev => {
+        const updated = { ...prev };
+        delete updated[currentItem._id];
+        return updated;
+      });
+    }
     setCurrentTopIndex((prev) => (prev === 0 ? topItems.length - 1 : prev - 1));
   };
 
   const handleTopNext = () => {
+    // Clear selected size for current item before navigating
+    if (topItems.length > 0 && topItems[currentTopIndex]) {
+      const currentItem = topItems[currentTopIndex];
+      setSelectedSizes(prev => {
+        const updated = { ...prev };
+        delete updated[currentItem._id];
+        return updated;
+      });
+    }
     setCurrentTopIndex((prev) => (prev === topItems.length - 1 ? 0 : prev + 1));
   };
 
   const handleBottomPrevious = () => {
+    // Clear selected size for current item before navigating
+    if (bottomItems.length > 0 && bottomItems[currentBottomIndex]) {
+      const currentItem = bottomItems[currentBottomIndex];
+      setSelectedSizes(prev => {
+        const updated = { ...prev };
+        delete updated[currentItem._id];
+        return updated;
+      });
+    }
     setCurrentBottomIndex((prev) => (prev === 0 ? bottomItems.length - 1 : prev - 1));
   };
 
   const handleBottomNext = () => {
+    // Clear selected size for current item before navigating
+    if (bottomItems.length > 0 && bottomItems[currentBottomIndex]) {
+      const currentItem = bottomItems[currentBottomIndex];
+      setSelectedSizes(prev => {
+        const updated = { ...prev };
+        delete updated[currentItem._id];
+        return updated;
+      });
+    }
     setCurrentBottomIndex((prev) => (prev === bottomItems.length - 1 ? 0 : prev + 1));
   };
 
@@ -174,7 +210,7 @@ const MixupAndSee = () => {
 
   return (
     <div className="mixup-container">
-      <div className="container-fluid px-0" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <div className="container-fluid px-0 mixup-container-fluid">
         <div className="mixup-section top-section">
           <div className="mixup-slideshow-container">
             {topItems.length > 0 ? (
@@ -204,13 +240,46 @@ const MixupAndSee = () => {
                         <div className="mixup-item-info">
                           <h4>{product.name}</h4>
                           <p className="mixup-item-price">${product.price}</p>
+                          
+                          {/* Size Selection */}
+                          {product.sizes && product.sizes.length > 0 && (
+                            <div className="mixup-size-selection">
+                              <h6>Select Size:</h6>
+                              <div className="d-flex flex-wrap gap-2">
+                                {product.sizes.map((size) => (
+                                  <button
+                                    key={size}
+                                    type="button"
+                                    className={`mixup-size-button ${selectedSizes[item._id] === size ? 'selected' : ''}`}
+                                    onClick={() => setSelectedSizes(prev => ({ ...prev, [item._id]: size }))}
+                                  >
+                                    {size}
+                                  </button>
+                                ))}
+                              </div>
+                              {selectedSizes[item._id] && (
+                                <p className="text-success mt-1 mb-0 mixup-size-selected-text">
+                                  <small>Selected: {selectedSizes[item._id]}</small>
+                                </p>
+                              )}
+                            </div>
+                          )}
+
                           <div className="mixup-item-actions">
                             <button
                               className="btn btn-primary btn-sm"
                               onClick={() => handleAddToCart(item, item._id)}
-                              disabled={addingToCart[item._id] || product.availability <= 0}
+                              disabled={
+                                addingToCart[item._id] || 
+                                product.availability <= 0 ||
+                                (product.sizes && product.sizes.length > 0 && !selectedSizes[item._id])
+                              }
                             >
-                              {addingToCart[item._id] ? 'Adding...' : 'Add to Cart'}
+                              {addingToCart[item._id] 
+                                ? 'Adding...' 
+                                : (product.sizes && product.sizes.length > 0 && !selectedSizes[item._id])
+                                  ? 'Select Size'
+                                  : 'Add to Cart'}
                             </button>
                             <button
                               className="btn btn-outline-danger btn-sm"
@@ -269,13 +338,46 @@ const MixupAndSee = () => {
                         <div className="mixup-item-info">
                           <h4>{product.name}</h4>
                           <p className="mixup-item-price">${product.price}</p>
+                          
+                          {/* Size Selection */}
+                          {product.sizes && product.sizes.length > 0 && (
+                            <div className="mixup-size-selection">
+                              <h6>Select Size:</h6>
+                              <div className="d-flex flex-wrap gap-2">
+                                {product.sizes.map((size) => (
+                                  <button
+                                    key={size}
+                                    type="button"
+                                    className={`mixup-size-button ${selectedSizes[item._id] === size ? 'selected' : ''}`}
+                                    onClick={() => setSelectedSizes(prev => ({ ...prev, [item._id]: size }))}
+                                  >
+                                    {size}
+                                  </button>
+                                ))}
+                              </div>
+                              {selectedSizes[item._id] && (
+                                <p className="text-success mt-1 mb-0 mixup-size-selected-text">
+                                  <small>Selected: {selectedSizes[item._id]}</small>
+                                </p>
+                              )}
+                            </div>
+                          )}
+
                           <div className="mixup-item-actions">
                             <button
                               className="btn btn-primary btn-sm"
                               onClick={() => handleAddToCart(item, item._id)}
-                              disabled={addingToCart[item._id] || product.availability <= 0}
+                              disabled={
+                                addingToCart[item._id] || 
+                                product.availability <= 0 ||
+                                (product.sizes && product.sizes.length > 0 && !selectedSizes[item._id])
+                              }
                             >
-                              {addingToCart[item._id] ? 'Adding...' : 'Add to Cart'}
+                              {addingToCart[item._id] 
+                                ? 'Adding...' 
+                                : (product.sizes && product.sizes.length > 0 && !selectedSizes[item._id])
+                                  ? 'Select Size'
+                                  : 'Add to Cart'}
                             </button>
                             <button
                               className="btn btn-outline-danger btn-sm"
@@ -307,11 +409,10 @@ const MixupAndSee = () => {
 
         {/* Clear All Button - Only shows when there are items */}
         {previewItems.length > 0 && (
-          <div className="text-center py-2" style={{ backgroundColor: '#fff', borderTop: '1px solid #e0e0e0' }}>
+          <div className="mixup-clear-all-container">
             <button
-              className="btn btn-danger btn-sm"
+              className="btn btn-danger btn-sm mixup-clear-all-button"
               onClick={handleClearPreview}
-              style={{ margin: '0.5rem' }}
             >
               Clear All Items
             </button>
