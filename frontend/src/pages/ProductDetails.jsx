@@ -303,15 +303,13 @@ const ProductDetails = () => {
                         : 'Add to Cart')
                     : 'Out of Stock'}
               </button>
-              {user && (
-                <button 
-                  className="product-action-btn secondary"
-                  disabled={addingToPreview}
-                  onClick={handleAddToPreview}
-                >
-                  {addingToPreview ? 'Adding...' : 'Add to Preview'}
-                </button>
-              )}
+              <button 
+                className="product-action-btn secondary"
+                disabled={addingToPreview}
+                onClick={handleAddToPreview}
+              >
+                {addingToPreview ? 'Adding...' : 'Add to Preview'}
+              </button>
               <button className="product-action-btn secondary">
                 Add to Wishlist
               </button>
