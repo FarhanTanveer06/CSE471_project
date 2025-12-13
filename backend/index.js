@@ -39,6 +39,7 @@ const cartRoutes = require('./routes/cart.routes');
 const previewRoutes = require('./routes/preview.routes');
 const adminRoutes = require('./routes/admin.routes');
 const reviewRoutes = require('./routes/review.routes');
+const orderRoutes = require('./routes/order.routes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -47,6 +48,7 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/preview', previewRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/orders', orderRoutes);
 
 const connectDB = async () => {
   try {
