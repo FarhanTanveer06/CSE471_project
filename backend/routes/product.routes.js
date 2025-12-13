@@ -7,6 +7,7 @@ const admin = require('../middlewares/adminMiddleware');
 // Public
 router.get('/', productController.getAllProducts);
 router.get('/category/:category', productController.getProductsByCategory);
+router.get('/:id/complementary', productController.getComplementaryProducts);
 router.get('/:id', productController.getProductById);
 
 // Admin only

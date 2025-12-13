@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
 import '../styles/productDetails.css';
@@ -15,6 +15,8 @@ const ProductDetails = () => {
   const [selectedSize, setSelectedSize] = useState('');
   const [addingToCart, setAddingToCart] = useState(false);
   const [addingToPreview, setAddingToPreview] = useState(false);
+  const [complementaryProducts, setComplementaryProducts] = useState([]);
+  const [loadingComplementary, setLoadingComplementary] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -35,6 +37,26 @@ const ProductDetails = () => {
       fetchProduct();
     }
   }, [id]);
+
+  // Fetch complementary products when product is loaded
+  useEffect(() => {
+    const fetchComplementaryProducts = async () => {
+      if (!product || !id) return;
+      
+      try {
+        setLoadingComplementary(true);
+        const response = await api.get(`/products/${id}/complementary`);
+        setComplementaryProducts(response.data);
+      } catch (err) {
+        console.error('Error fetching complementary products:', err);
+        // Don't show error to user, just log it
+      } finally {
+        setLoadingComplementary(false);
+      }
+    };
+
+    fetchComplementaryProducts();
+  }, [product, id]);
 
   if (loading) {
     return (
@@ -316,6 +338,104 @@ const ProductDetails = () => {
             </div>
           </div>
         </div>
+
+        {/* Outfit Suggestions Section */}
+        {(loadingComplementary || complementaryProducts.length > 0) && (
+          <div className="outfit-suggestions-section mt-5">
+            <div className="outfit-suggestions-header">
+              <h2 className="outfit-suggestions-title">Complete Your Outfit</h2>
+              <p className="outfit-suggestions-subtitle">
+                These items go well with {product.name}
+              </p>
+            </div>
+            
+            {loadingComplementary ? (
+              <div className="outfit-suggestions-loading">
+                <div className="spinner-border text-primary" role="status">
+                  <span className="visually-hidden">Loading suggestions...</span>
+                </div>
+              </div>
+            ) : complementaryProducts.length > 0 ? (
+              <div className="outfit-suggestions-grid">
+              {complementaryProducts.map((suggestedProduct) => {
+                const suggestedImages = suggestedProduct.images && suggestedProduct.images.length > 0 
+                  ? suggestedProduct.images 
+                  : (suggestedProduct.imageUrl ? [suggestedProduct.imageUrl] : []);
+                const suggestedImageSrc = suggestedImages.length > 0 
+                  ? suggestedImages[0]
+                  : 'https://via.placeholder.com/300x400?text=No+Image';
+                const isSuggestedAvailable = suggestedProduct.availability > 0;
+
+                return (
+                  <div key={suggestedProduct._id} className="outfit-suggestion-card">
+                    <Link 
+                      to={`/products/${suggestedProduct._id}`}
+                      className="outfit-suggestion-link"
+                    >
+                      <div className="outfit-suggestion-image-container">
+                        <img 
+                          src={suggestedImageSrc} 
+                          alt={suggestedProduct.name}
+                          className="outfit-suggestion-image"
+                        />
+                        {!isSuggestedAvailable && (
+                          <div className="outfit-suggestion-overlay">
+                            <span className="outfit-suggestion-badge out-of-stock">Out of Stock</span>
+                          </div>
+                        )}
+                        {suggestedProduct.featured && (
+                          <div className="outfit-suggestion-featured-badge">Featured</div>
+                        )}
+                      </div>
+                      <div className="outfit-suggestion-info">
+                        <h5 className="outfit-suggestion-name">{suggestedProduct.name}</h5>
+                        <div className="outfit-suggestion-details">
+                          <span className="outfit-suggestion-category">{suggestedProduct.category}</span>
+                          {suggestedProduct.type && (
+                            <span className="outfit-suggestion-type">{suggestedProduct.type}</span>
+                          )}
+                        </div>
+                        <div className="outfit-suggestion-price">${suggestedProduct.price}</div>
+                      </div>
+                    </Link>
+                    <div className="outfit-suggestion-actions">
+                      <button
+                        className="outfit-suggestion-btn"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          navigate(`/products/${suggestedProduct._id}`);
+                        }}
+                      >
+                        View Details
+                      </button>
+                      {isSuggestedAvailable && user && (
+                        <button
+                          className="outfit-suggestion-btn primary"
+                          onClick={async (e) => {
+                            e.preventDefault();
+                            try {
+                              await api.post('/cart/add', {
+                                productId: suggestedProduct._id,
+                                quantity: 1,
+                                size: suggestedProduct.sizes?.[0] || 'M'
+                              });
+                              alert('Item added to cart successfully!');
+                            } catch (err) {
+                              alert(err.response?.data?.message || 'Failed to add item to cart');
+                            }
+                          }}
+                        >
+                          Add to Cart
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+              </div>
+            ) : null}
+          </div>
+        )}
       </div>
     </div>
   );

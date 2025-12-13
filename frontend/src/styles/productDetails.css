@@ -273,6 +273,214 @@
   color: var(--accent-foreground);
 }
 
+/* Outfit Suggestions Section */
+.outfit-suggestions-section {
+  margin-top: 4rem;
+  padding-top: 3rem;
+  border-top: 2px solid var(--border);
+}
+
+.outfit-suggestions-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem 0;
+}
+
+.outfit-suggestions-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.outfit-suggestions-title {
+  font-size: 2rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--foreground);
+  margin-bottom: 0.5rem;
+}
+
+.outfit-suggestions-subtitle {
+  color: var(--muted-foreground);
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.outfit-suggestions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.outfit-suggestion-card {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+
+.outfit-suggestion-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary);
+}
+
+.outfit-suggestion-link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.outfit-suggestion-image-container {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.outfit-suggestion-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.outfit-suggestion-card:hover .outfit-suggestion-image {
+  transform: scale(1.05);
+}
+
+.outfit-suggestion-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.outfit-suggestion-badge {
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  font-weight: var(--font-weight-medium);
+  font-size: 0.875rem;
+}
+
+.outfit-suggestion-badge.out-of-stock {
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
+}
+
+.outfit-suggestion-featured-badge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+}
+
+.outfit-suggestion-info {
+  padding: 1.25rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.outfit-suggestion-name {
+  font-size: 1.1rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--foreground);
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
+}
+
+.outfit-suggestion-details {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.outfit-suggestion-category,
+.outfit-suggestion-type {
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-medium);
+  text-transform: capitalize;
+}
+
+.outfit-suggestion-category {
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.outfit-suggestion-type {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.outfit-suggestion-price {
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--primary);
+  margin-top: auto;
+}
+
+.outfit-suggestion-actions {
+  padding: 0 1.25rem 1.25rem;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.outfit-suggestion-btn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background-color: transparent;
+  color: var(--foreground);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+}
+
+.outfit-suggestion-btn:hover {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+  border-color: var(--accent);
+}
+
+.outfit-suggestion-btn.primary {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
+}
+
+.outfit-suggestion-btn.primary:hover {
+  background-color: #34495e;
+  border-color: #34495e;
+  transform: translateY(-1px);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .product-info-section {
@@ -295,6 +503,33 @@
   .product-thumbnail {
     width: 80px;
     height: 80px;
+  }
+
+  .outfit-suggestions-title {
+    font-size: 1.5rem;
+  }
+
+  .outfit-suggestions-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .outfit-suggestion-image-container {
+    height: 250px;
+  }
+
+  .outfit-suggestion-actions {
+    flex-direction: column;
+  }
+
+  .outfit-suggestion-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .outfit-suggestions-grid {
+    grid-template-columns: 1fr;
   }
 }
 
