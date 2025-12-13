@@ -15,6 +15,7 @@ const AdminDashboard = () => {
   const [success, setSuccess] = useState('');
 
   // Product form state
+  // Product form state
   const [productForm, setProductForm] = useState({
     name: '',
     price: '',
