@@ -9,7 +9,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-image: url('https://img.freepik.com/free-vector/hand-drawn-minimal-background_23-2149013358.jpg?w=1380&t=st=1704299902~exp=1704300502~hmac=2e9bf28568519da09185b9bb82a155959b32bf3152be1a470fa252a643628a11');
+  background-size: 100% 100%;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   padding: 2rem 1rem;
   position: relative;
   overflow: hidden;
@@ -22,20 +26,27 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
-    radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  background: rgba(255, 255, 255, 0.75);
   pointer-events: none;
+  z-index: 0;
 }
 
 /* Alternative Professional Background */
 .auth-container-alt {
-  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  background-image: url('https://img.freepik.com/free-vector/hand-drawn-minimal-background_23-2149013358.jpg?w=1380&t=st=1704299902~exp=1704300502~hmac=2e9bf28568519da09185b9bb82a155959b32bf3152be1a470fa252a643628a11');
+  background-size: 100% 100%;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.auth-container-alt::before {
+  background: rgba(255, 255, 255, 0.78);
 }
 
 /* Auth Card */
 .auth-card {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 1rem;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
   width: 100%;
@@ -44,7 +55,7 @@
   position: relative;
   z-index: 1;
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 /* Auth Header */
@@ -299,7 +310,7 @@
 
 /* Already Logged In Card */
 .auth-logged-in-card {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 1rem;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
   width: 100%;
@@ -308,6 +319,8 @@
   text-align: center;
   position: relative;
   z-index: 1;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .auth-logged-in-title {

@@ -68,7 +68,6 @@ const Navbar = () => {
                 </li>
                 <li className="nav-item nav-link text-light">
                   {user.role === 'admin' ? 'Hi admin' : 'Hi'}, {user.name}
-                  {user.username && <small className="text-muted ms-1">(@{user.username})</small>}
                 </li>
                 <li className="nav-item"><button className="btn btn-outline-light ms-2" onClick={handleLogout}>Logout</button></li>
               </>
