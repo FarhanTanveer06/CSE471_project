@@ -24,6 +24,8 @@ const ProductDetails = () => {
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewComment, setReviewComment] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [inWishlist, setInWishlist] = useState(false);
+  const [addingToWishlist, setAddingToWishlist] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -103,6 +105,23 @@ const ProductDetails = () => {
     };
 
     fetchUserReview();
+  }, [user, id]);
+
+  // Check if product is in wishlist
+  useEffect(() => {
+    const checkWishlist = async () => {
+      if (!user || !id) return;
+      
+      try {
+        const response = await api.get(`/wishlist/check/${id}`);
+        setInWishlist(response.data.inWishlist);
+      } catch (err) {
+        // Not in wishlist or error
+        setInWishlist(false);
+      }
+    };
+
+    checkWishlist();
   }, [user, id]);
 
   const handleSubmitReview = async (e) => {
@@ -186,6 +205,32 @@ const ProductDetails = () => {
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to delete review');
       console.error('Error deleting review:', err);
+    }
+  };
+
+  const handleWishlistToggle = async () => {
+    if (!user) {
+      alert('Please login to add items to wishlist');
+      navigate('/login');
+      return;
+    }
+
+    try {
+      setAddingToWishlist(true);
+      if (inWishlist) {
+        await api.delete(`/wishlist/product/${id}`);
+        setInWishlist(false);
+        alert('Removed from wishlist');
+      } else {
+        await api.post('/wishlist', { productId: id });
+        setInWishlist(true);
+        alert('Added to wishlist!');
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to update wishlist');
+      console.error('Error updating wishlist:', err);
+    } finally {
+      setAddingToWishlist(false);
     }
   };
 
@@ -491,8 +536,16 @@ const ProductDetails = () => {
               >
                 {addingToPreview ? 'Adding...' : 'Add to Preview'}
               </button>
-              <button className="product-action-btn secondary">
-                Add to Wishlist
+              <button 
+                className={`product-action-btn secondary ${inWishlist ? 'in-wishlist' : ''}`}
+                disabled={addingToWishlist}
+                onClick={handleWishlistToggle}
+              >
+                {addingToWishlist 
+                  ? 'Updating...' 
+                  : inWishlist 
+                    ? '❤️ In Wishlist' 
+                    : '🤍 Add to Wishlist'}
               </button>
             </div>
           </div>
