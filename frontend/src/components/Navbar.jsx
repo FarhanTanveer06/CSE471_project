@@ -62,6 +62,11 @@ const Navbar = () => {
             {user ? (
               <>
                 <li className="nav-item">
+                  <Link className="nav-link" to="/wishlist" onClick={() => handleNavClick('/wishlist')}>
+                    Wishlist
+                  </Link>
+                </li>
+                <li className="nav-item">
                   <Link className="nav-link" to="/cart" onClick={() => handleNavClick('/cart')}>
                     Cart
                   </Link>

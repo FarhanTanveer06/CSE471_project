@@ -1,13 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useState, useEffect, useRef, useContext } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
 import '../styles/products.css';
 
 const Products = () => {
   const { category } = useParams();
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [wishlistStatus, setWishlistStatus] = useState({});
+  const [updatingWishlist, setUpdatingWishlist] = useState({});
   const searchInputRef = useRef(null);
 
   // Filter and search states
@@ -94,6 +99,53 @@ const Products = () => {
     setMinPrice('');
     setMaxPrice('');
     setSortBy('newArrival');
+  };
+
+  // Check wishlist status for all products
+  useEffect(() => {
+    const checkWishlistStatus = async () => {
+      if (!user || products.length === 0) return;
+      
+      const status = {};
+      for (const product of products) {
+        try {
+          const response = await api.get(`/wishlist/check/${product._id}`);
+          status[product._id] = response.data.inWishlist;
+        } catch (err) {
+          status[product._id] = false;
+        }
+      }
+      setWishlistStatus(status);
+    };
+
+    checkWishlistStatus();
+  }, [user, products]);
+
+  const handleWishlistToggle = async (e, productId) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!user) {
+      alert('Please login to add items to wishlist');
+      navigate('/login');
+      return;
+    }
+
+    try {
+      setUpdatingWishlist({ ...updatingWishlist, [productId]: true });
+      if (wishlistStatus[productId]) {
+        await api.delete(`/wishlist/product/${productId}`);
+        setWishlistStatus({ ...wishlistStatus, [productId]: false });
+      } else {
+        await api.post('/wishlist', { productId });
+        setWishlistStatus({ ...wishlistStatus, [productId]: true });
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to update wishlist');
+      console.error('Error updating wishlist:', err);
+    } finally {
+      setUpdatingWishlist({ ...updatingWishlist, [productId]: false });
+    }
   };
 
   // Helper function to get product image
@@ -352,8 +404,26 @@ const Products = () => {
         <div className="row g-4">
           {products.map((prod) => (
             <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={prod._id}>
-              <Link to={`/products/${prod._id}`} className="text-decoration-none text-reset">
-                <div className="premium-product-card">
+              <div className="premium-product-card position-relative">
+                {/* Wishlist Button */}
+                {user && (
+                  <button
+                    className="product-wishlist-btn"
+                    onClick={(e) => handleWishlistToggle(e, prod._id)}
+                    disabled={updatingWishlist[prod._id]}
+                    title={wishlistStatus[prod._id] ? 'Remove from wishlist' : 'Add to wishlist'}
+                  >
+                    {updatingWishlist[prod._id] ? (
+                      '...'
+                    ) : wishlistStatus[prod._id] ? (
+                      '❤️'
+                    ) : (
+                      '🤍'
+                    )}
+                  </button>
+                )}
+                
+                <Link to={`/products/${prod._id}`} className="text-decoration-none text-reset">
                   <div className="product-image-container">
                     <img 
                       src={getProductImage(prod)} 
@@ -366,6 +436,14 @@ const Products = () => {
                         color: '#ffffff'
                       }}>
                         Out of Stock
+                      </span>
+                    )}
+                    {prod.featured && (
+                      <span className="premium-badge position-absolute top-0 end-0 m-2" style={{
+                        background: '#2c3e50',
+                        color: '#ffffff'
+                      }}>
+                        Featured
                       </span>
                     )}
                   </div>
@@ -408,8 +486,8 @@ const Products = () => {
                       <p className="small" style={{color: '#6c757d', marginTop: 'auto'}}>{prod.description}</p>
                     )}
                   </div>
-                </div>
-              </Link>
+                </Link>
+              </div>
             </div>
           ))}
         </div>

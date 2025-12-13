@@ -90,8 +90,7 @@ const Cart = () => {
   };
 
   const handleCheckout = () => {
-    // TODO: Implement checkout functionality
-    alert('Checkout functionality will be implemented in Module 3');
+    navigate('/checkout');
   };
 
   if (loading) {

@@ -6,6 +6,8 @@ import Signup from './pages/Signup';
 import Products from './pages/Products';
 import ProductDetails from './pages/ProductDetails';
 import Cart from './pages/Cart';
+import Checkout from './pages/Checkout';
+import Wishlist from './pages/Wishlist';
 import MixupAndSee from './pages/MixupAndSee';
 import AdminDashboard from './pages/AdminDashboard';
 import AuthProvider from './context/AuthContext';
@@ -24,6 +26,8 @@ const App = () => (
         <Route path="/products/category/:category" element={<Products />} />
         <Route path="/products/:id" element={<ProductDetails />} />
         <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+        <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+        <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
         <Route path="/mixup-and-see" element={<ProtectedRoute><MixupAndSee /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
       </Routes>
