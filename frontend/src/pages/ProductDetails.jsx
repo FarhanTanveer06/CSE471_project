@@ -17,6 +17,13 @@ const ProductDetails = () => {
   const [addingToPreview, setAddingToPreview] = useState(false);
   const [complementaryProducts, setComplementaryProducts] = useState([]);
   const [loadingComplementary, setLoadingComplementary] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [loadingReviews, setLoadingReviews] = useState(false);
+  const [userReview, setUserReview] = useState(null);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState('');
+  const [submittingReview, setSubmittingReview] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -57,6 +64,148 @@ const ProductDetails = () => {
 
     fetchComplementaryProducts();
   }, [product, id]);
+
+  // Fetch reviews when product is loaded
+  useEffect(() => {
+    const fetchReviews = async () => {
+      if (!id) return;
+      
+      try {
+        setLoadingReviews(true);
+        const response = await api.get(`/reviews/product/${id}`);
+        setReviews(response.data);
+      } catch (err) {
+        console.error('Error fetching reviews:', err);
+      } finally {
+        setLoadingReviews(false);
+      }
+    };
+
+    fetchReviews();
+  }, [id]);
+
+  // Fetch user's review if logged in
+  useEffect(() => {
+    const fetchUserReview = async () => {
+      if (!user || !id) return;
+      
+      try {
+        const response = await api.get(`/reviews/product/${id}/user`);
+        setUserReview(response.data);
+        setReviewRating(response.data.rating);
+        setReviewComment(response.data.comment);
+      } catch (err) {
+        // User hasn't reviewed yet, which is fine
+        if (err.response?.status !== 404) {
+          console.error('Error fetching user review:', err);
+        }
+      }
+    };
+
+    fetchUserReview();
+  }, [user, id]);
+
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    
+    if (!user) {
+      alert('Please login to submit a review');
+      navigate('/login');
+      return;
+    }
+
+    if (reviewRating === 0) {
+      alert('Please select a rating');
+      return;
+    }
+
+    if (!reviewComment.trim()) {
+      alert('Please write a review comment');
+      return;
+    }
+
+    try {
+      setSubmittingReview(true);
+      
+      if (userReview) {
+        // Update existing review
+        await api.put(`/reviews/${userReview._id}`, {
+          rating: reviewRating,
+          comment: reviewComment
+        });
+        alert('Review updated successfully!');
+      } else {
+        // Create new review
+        const response = await api.post(`/reviews/product/${id}`, {
+          rating: reviewRating,
+          comment: reviewComment
+        });
+        setUserReview(response.data);
+        alert('Review submitted successfully!');
+      }
+
+      // Refresh reviews and product
+      const reviewsResponse = await api.get(`/reviews/product/${id}`);
+      setReviews(reviewsResponse.data);
+      
+      const productResponse = await api.get(`/products/${id}`);
+      setProduct(productResponse.data);
+      
+      setShowReviewForm(false);
+      setReviewRating(0);
+      setReviewComment('');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to submit review');
+      console.error('Error submitting review:', err);
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
+  const handleDeleteReview = async () => {
+    if (!userReview) return;
+    
+    if (!window.confirm('Are you sure you want to delete your review?')) {
+      return;
+    }
+
+    try {
+      await api.delete(`/reviews/${userReview._id}`);
+      setUserReview(null);
+      setReviewRating(0);
+      setReviewComment('');
+      
+      // Refresh reviews and product
+      const reviewsResponse = await api.get(`/reviews/product/${id}`);
+      setReviews(reviewsResponse.data);
+      
+      const productResponse = await api.get(`/products/${id}`);
+      setProduct(productResponse.data);
+      
+      alert('Review deleted successfully!');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to delete review');
+      console.error('Error deleting review:', err);
+    }
+  };
+
+  const StarRating = ({ rating, onRatingChange, interactive = false }) => {
+    return (
+      <div className="star-rating">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <span
+            key={star}
+            className={`star ${star <= rating ? 'filled' : ''} ${interactive ? 'interactive' : ''}`}
+            onClick={() => interactive && onRatingChange && onRatingChange(star)}
+            onMouseEnter={() => interactive && onRatingChange && onRatingChange(star)}
+            style={{ cursor: interactive ? 'pointer' : 'default' }}
+          >
+            ★
+          </span>
+        ))}
+      </div>
+    );
+  };
 
   if (loading) {
     return (
@@ -191,6 +340,16 @@ const ProductDetails = () => {
             
             {/* Price */}
             <div className="product-price">${product.price}</div>
+
+            {/* Rating Display */}
+            {product.averageRating && (
+              <div className="product-rating-display mb-3">
+                <StarRating rating={Math.round(product.averageRating)} />
+                <span className="rating-text ms-2">
+                  {product.averageRating.toFixed(1)} ({product.totalReviews || 0} {product.totalReviews === 1 ? 'review' : 'reviews'})
+                </span>
+              </div>
+            )}
 
             {/* Availability Badge */}
             <div className="product-badges">
@@ -436,6 +595,145 @@ const ProductDetails = () => {
             ) : null}
           </div>
         )}
+
+        {/* Reviews Section */}
+        <div className="reviews-section mt-5">
+          <div className="reviews-header">
+            <h2 className="reviews-title">Customer Reviews</h2>
+            {product.averageRating && (
+              <div className="reviews-summary">
+                <StarRating rating={Math.round(product.averageRating)} />
+                <span className="reviews-summary-text">
+                  {product.averageRating.toFixed(1)} out of 5 ({product.totalReviews || 0} {product.totalReviews === 1 ? 'review' : 'reviews'})
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Review Form */}
+          {user && (
+            <div className="review-form-section">
+              {!userReview && !showReviewForm ? (
+                <button 
+                  className="review-form-toggle-btn"
+                  onClick={() => setShowReviewForm(true)}
+                >
+                  Write a Review
+                </button>
+              ) : (
+                <div className="review-form-card">
+                  <h4 className="review-form-title">
+                    {userReview ? 'Edit Your Review' : 'Write a Review'}
+                  </h4>
+                  <form onSubmit={handleSubmitReview}>
+                    <div className="review-form-group">
+                      <label className="review-form-label">Rating</label>
+                      <StarRating 
+                        rating={reviewRating} 
+                        onRatingChange={setReviewRating}
+                        interactive={true}
+                      />
+                    </div>
+                    <div className="review-form-group">
+                      <label className="review-form-label">Your Review</label>
+                      <textarea
+                        className="review-form-textarea"
+                        value={reviewComment}
+                        onChange={(e) => setReviewComment(e.target.value)}
+                        placeholder="Share your experience with this product..."
+                        rows={5}
+                        maxLength={1000}
+                        required
+                      />
+                      <small className="review-form-char-count">
+                        {reviewComment.length}/1000 characters
+                      </small>
+                    </div>
+                    <div className="review-form-actions">
+                      <button 
+                        type="submit" 
+                        className="review-form-submit-btn"
+                        disabled={submittingReview || reviewRating === 0}
+                      >
+                        {submittingReview ? 'Submitting...' : userReview ? 'Update Review' : 'Submit Review'}
+                      </button>
+                      {userReview && (
+                        <button
+                          type="button"
+                          className="review-form-delete-btn"
+                          onClick={handleDeleteReview}
+                        >
+                          Delete Review
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="review-form-cancel-btn"
+                        onClick={() => {
+                          setShowReviewForm(false);
+                          if (!userReview) {
+                            setReviewRating(0);
+                            setReviewComment('');
+                          }
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Reviews List */}
+          <div className="reviews-list">
+            {loadingReviews ? (
+              <div className="reviews-loading">
+                <div className="spinner-border text-primary" role="status">
+                  <span className="visually-hidden">Loading reviews...</span>
+                </div>
+              </div>
+            ) : reviews.length > 0 ? (
+              reviews.map((review) => (
+                <div key={review._id} className="review-card">
+                  <div className="review-header">
+                    <div className="review-user-info">
+                      <div className="review-user-name">{review.userName}</div>
+                      <div className="review-date">
+                        {new Date(review.createdAt).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </div>
+                    </div>
+                    <StarRating rating={review.rating} />
+                  </div>
+                  <div className="review-comment">{review.comment}</div>
+                  {user && userReview && userReview._id === review._id && (
+                    <div className="review-actions">
+                      <button
+                        className="review-edit-btn"
+                        onClick={() => {
+                          setShowReviewForm(true);
+                          setReviewRating(review.rating);
+                          setReviewComment(review.comment);
+                        }}
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div className="reviews-empty">
+                <p>No reviews yet. Be the first to review this product!</p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

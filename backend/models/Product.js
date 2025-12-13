@@ -13,6 +13,8 @@ const productSchema = new mongoose.Schema({
   gsm: { type: Number, required: true }, // Grams per Square Meter
   availability: { type: Number, default: 0, min: 0 }, // Stock count
   featured: { type: Boolean, default: false }, // Featured product flag
+  averageRating: { type: Number, min: 0, max: 5 }, // Average rating from reviews
+  totalReviews: { type: Number, default: 0, min: 0 }, // Total number of reviews
   createdAt: { type: Date, default: Date.now }
 });
 
