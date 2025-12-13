@@ -132,3 +132,74 @@ exports.deleteProduct = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+// Get complementary products for outfit suggestions
+exports.getComplementaryProducts = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await Product.findById(id);
+    
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    // Define complementary categories based on current product category
+    let complementaryCategories = [];
+    if (product.category === 'shirts') {
+      complementaryCategories = ['pants', 'blazers'];
+    } else if (product.category === 'pants') {
+      complementaryCategories = ['shirts', 'blazers'];
+    } else if (product.category === 'blazers') {
+      complementaryCategories = ['shirts', 'pants'];
+    }
+
+    // Define color compatibility - colors that work well together
+    const colorCompatibility = {
+      'Black': ['Black', 'White', 'Gray', 'Navy'],
+      'White': ['Black', 'Navy', 'Gray', 'Brown'],
+      'Navy': ['White', 'Gray', 'Black', 'Brown'],
+      'Gray': ['Black', 'White', 'Navy', 'Brown'],
+      'Brown': ['White', 'Navy', 'Gray', 'Black']
+    };
+
+    const compatibleColors = colorCompatibility[product.color] || [product.color];
+
+    // Find complementary products
+    // Priority: Same type > Compatible colors > In stock > Featured
+    const allSuggestions = await Product.find({
+      _id: { $ne: product._id }, // Exclude the current product
+      category: { $in: complementaryCategories },
+      availability: { $gt: 0 }, // Only in-stock items
+      $or: [
+        { type: product.type }, // Same type (e.g., both Formal)
+        { color: { $in: compatibleColors } } // Compatible colors
+      ]
+    })
+    .sort({ 
+      featured: -1,
+      createdAt: -1 
+    });
+
+    // Sort by priority: same type first, then by featured and date
+    const suggestions = allSuggestions
+      .sort((a, b) => {
+        // Prioritize products with same type
+        const aSameType = a.type === product.type ? 1 : 0;
+        const bSameType = b.type === product.type ? 1 : 0;
+        if (aSameType !== bSameType) {
+          return bSameType - aSameType;
+        }
+        // Then by featured
+        if (a.featured !== b.featured) {
+          return b.featured - a.featured;
+        }
+        // Then by creation date
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      })
+      .slice(0, 8); // Limit to 8 suggestions
+
+    res.json(suggestions);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
