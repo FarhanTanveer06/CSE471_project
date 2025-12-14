@@ -26,6 +26,7 @@ const ProductDetails = () => {
   const [submittingReview, setSubmittingReview] = useState(false);
   const [inWishlist, setInWishlist] = useState(false);
   const [addingToWishlist, setAddingToWishlist] = useState(false);
+  const [weather, setWeather] = useState(null);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -106,6 +107,20 @@ const ProductDetails = () => {
 
     fetchUserReview();
   }, [user, id]);
+
+  // Fetch weather for Dhaka
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        const response = await api.get('/weather?city=Dhaka');
+        setWeather(response.data);
+      } catch (err) {
+        // Silently fail
+      }
+    };
+
+    fetchWeather();
+  }, []);
 
   // Check if product is in wishlist
   useEffect(() => {
@@ -280,6 +295,69 @@ const ProductDetails = () => {
   const availabilityText = isAvailable 
     ? `${product.availability} in stock` 
     : 'Out of stock';
+
+  // Function to determine GSM suitability based on Bangladesh temperature feelings
+  const getGSMSuitability = (gsm, temperature) => {
+    if (!gsm || !temperature) return null;
+
+    // Bangladesh Temperature Feelings:
+    // Below 15°C (Cold) - Winter - Need heavy fabric (200+ GSM) - jackets, sweaters
+    // 15-25°C (Mild/Pleasant) - Late winter/early spring - Medium fabric (150-200 GSM) - light sweater
+    // 25-30°C (Warm) - Spring/early summer - Light fabric (100-150 GSM) - short sleeves, cotton
+    // 30-35°C (Hot) - Peak summer - Very light fabric (<150 GSM, preferably <120) - light cotton
+    // Above 35°C (Very Hot) - Heatwaves - Very light fabric (<120 GSM) - very light clothing
+
+    if (temperature >= 35) {
+      // Very Hot (Above 35°C) - Heatwaves
+      if (gsm < 120) {
+        return { message: 'Perfect with your weather', status: 'perfect' };
+      } else if (gsm < 150) {
+        return { message: 'Too heavy for your weather', status: 'too-heavy' };
+      } else {
+        return { message: 'Too heavy for your weather', status: 'too-heavy' };
+      }
+    } else if (temperature >= 30) {
+      // Hot (30-35°C) - Peak summer
+      if (gsm < 150) {
+        return { message: 'Perfect with your weather', status: 'perfect' };
+      } else if (gsm < 200) {
+        return { message: 'Too heavy for your weather', status: 'too-heavy' };
+      } else {
+        return { message: 'Too heavy for your weather', status: 'too-heavy' };
+      }
+    } else if (temperature >= 25) {
+      // Warm (25-30°C) - Spring/early summer
+      if (gsm >= 100 && gsm < 150) {
+        return { message: 'Perfect with your weather', status: 'perfect' };
+      } else if (gsm < 100) {
+        return { message: 'Too light for your weather', status: 'too-light' };
+      } else {
+        return { message: 'Too heavy for your weather', status: 'too-heavy' };
+      }
+    } else if (temperature >= 15) {
+      // Mild/Pleasant (15-25°C) - Late winter/early spring
+      if (gsm >= 150 && gsm < 200) {
+        return { message: 'Perfect with your weather', status: 'perfect' };
+      } else if (gsm < 150) {
+        return { message: 'Too light for your weather', status: 'too-light' };
+      } else {
+        return { message: 'Too heavy for your weather', status: 'too-heavy' };
+      }
+    } else {
+      // Cold (Below 15°C) - Winter
+      if (gsm >= 200) {
+        return { message: 'Perfect with your weather', status: 'perfect' };
+      } else if (gsm >= 150) {
+        return { message: 'Too light for your weather', status: 'too-light' };
+      } else {
+        return { message: 'Too light for your weather', status: 'too-light' };
+      }
+    }
+  };
+
+  const gsmSuitability = weather && product.gsm 
+    ? getGSMSuitability(product.gsm, weather.temperature)
+    : null;
 
   // Handle backward compatibility - if product has imageUrl instead of images array
   const productImages = product.images && product.images.length > 0 
@@ -476,7 +554,14 @@ const ProductDetails = () => {
                     {product.gsm && (
                       <tr>
                         <td>GSM:</td>
-                        <td>{product.gsm} g/m²</td>
+                        <td>
+                          {product.gsm} g/m²
+                          {gsmSuitability && (
+                            <span className={`gsm-suitability ms-2 ${gsmSuitability.status}`}>
+                              {gsmSuitability.message}
+                            </span>
+                          )}
+                        </td>
                       </tr>
                     )}
                     <tr>

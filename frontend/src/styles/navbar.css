@@ -137,3 +137,19 @@
   }
 }
 
+/* Weather Widget Styles */
+.weather-widget {
+  padding: 5px 10px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: background-color 0.3s;
+}
+
+.weather-widget:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.weather-widget img {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
