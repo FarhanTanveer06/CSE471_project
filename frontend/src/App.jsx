@@ -10,6 +10,10 @@ import Checkout from './pages/Checkout';
 import Wishlist from './pages/Wishlist';
 import MixupAndSee from './pages/MixupAndSee';
 import AdminDashboard from './pages/AdminDashboard';
+import ResellProducts from './pages/ResellProducts';
+import ResellProductDetails from './pages/ResellProductDetails';
+import SellItem from './pages/SellItem';
+import MyResellItems from './pages/MyResellItems';
 import AuthProvider from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
@@ -30,6 +34,10 @@ const App = () => (
         <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
         <Route path="/mixup-and-see" element={<ProtectedRoute><MixupAndSee /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/resell" element={<ResellProducts />} />
+        <Route path="/resell/:id" element={<ResellProductDetails />} />
+        <Route path="/resell/sell" element={<ProtectedRoute><SellItem /></ProtectedRoute>} />
+        <Route path="/resell/my-items" element={<ProtectedRoute><MyResellItems /></ProtectedRoute>} />
       </Routes>
     </Router>
   </AuthProvider>

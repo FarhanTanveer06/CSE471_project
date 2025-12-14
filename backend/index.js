@@ -41,6 +41,7 @@ const adminRoutes = require('./routes/admin.routes');
 const reviewRoutes = require('./routes/review.routes');
 const orderRoutes = require('./routes/order.routes');
 const wishlistRoutes = require('./routes/wishlist.routes');
+const resellProductRoutes = require('./routes/resellProduct.routes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -51,6 +52,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/wishlist', wishlistRoutes);
+app.use('/api/resell', resellProductRoutes);
 
 const connectDB = async () => {
   try {
