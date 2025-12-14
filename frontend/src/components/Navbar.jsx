@@ -1,6 +1,7 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import api from '../services/api';
 import '../styles/navbar.css';
 
 const Navbar = () => {
@@ -8,6 +9,21 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [weather, setWeather] = useState(null);
+
+  // Fetch weather for Dhaka
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        const response = await api.get('/weather?city=Dhaka');
+        setWeather(response.data);
+      } catch (err) {
+        // Silently fail - don't show error to user
+      }
+    };
+
+    fetchWeather();
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -60,6 +76,22 @@ const Navbar = () => {
             )}
           </ul>
           <ul className="navbar-nav mb-2 mb-lg-0">
+            {/* Weather Widget */}
+            {weather && (
+              <li className="nav-item">
+                <div className="weather-widget d-flex align-items-center me-3">
+                  <img 
+                    src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`} 
+                    alt={weather.description}
+                    style={{ width: '40px', height: '40px' }}
+                  />
+                  <div className="ms-2 text-light">
+                    <div className="fw-bold" style={{ fontSize: '14px' }}>{weather.temperature}°C</div>
+                    <small style={{ fontSize: '11px', opacity: 0.8 }}>{weather.city}</small>
+                  </div>
+                </div>
+              </li>
+            )}
             {user ? (
               <>
                 <li className="nav-item">
