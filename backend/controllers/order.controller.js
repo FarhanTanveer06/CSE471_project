@@ -34,19 +34,22 @@ exports.createOrder = async (req, res) => {
     for (const cartItem of cart.items) {
       const product = cartItem.productId;
       
-      // Check if product still exists
       if (!product) {
         return res.status(400).json({ message: `Product ${cartItem.productId} no longer exists` });
       }
 
-      // Check stock availability
       if (product.availability < cartItem.quantity) {
         return res.status(400).json({ 
           message: `Insufficient stock for ${product.name}. Available: ${product.availability}, Requested: ${cartItem.quantity}` 
         });
       }
 
-      const itemTotal = cartItem.price * cartItem.quantity;
+      const itemPrice = typeof product.price === 'number' ? product.price : Number(product.price);
+      if (!itemPrice || Number.isNaN(itemPrice)) {
+        return res.status(400).json({ message: `Invalid price for ${product.name}` });
+      }
+
+      const itemTotal = itemPrice * cartItem.quantity;
       subtotal += itemTotal;
 
       orderItems.push({
@@ -54,7 +57,7 @@ exports.createOrder = async (req, res) => {
         productName: product.name,
         quantity: cartItem.quantity,
         size: cartItem.size,
-        price: cartItem.price,
+        price: itemPrice,
         total: itemTotal
       });
     }
@@ -123,7 +126,15 @@ exports.createOrder = async (req, res) => {
       notes: notes || ''
     });
 
-    await order.save();
+    try {
+      await order.save();
+    } catch (saveErr) {
+      if (saveErr.name === 'ValidationError') {
+        const details = Object.values(saveErr.errors).map(e => e.message);
+        return res.status(400).json({ message: 'Order validation failed', details });
+      }
+      throw saveErr;
+    }
 
     // Update product availability
     for (const item of orderItems) {
@@ -142,7 +153,8 @@ exports.createOrder = async (req, res) => {
     res.status(201).json(order);
   } catch (err) {
     console.error('Error creating order:', err);
-    res.status(500).json({ message: err.message });
+    const isValidation = err?.name === 'ValidationError';
+    res.status(isValidation ? 400 : 500).json({ message: err.message || 'Internal Server Error' });
   }
 };
 

@@ -11,6 +11,7 @@ const Checkout = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [errorDetails, setErrorDetails] = useState(null);
 
   // Form states
   const [shippingAddress, setShippingAddress] = useState({
@@ -73,6 +74,7 @@ const Checkout = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setErrorDetails(null);
 
     // Validate shipping address
     if (!shippingAddress.fullName || !shippingAddress.phone || 
@@ -143,6 +145,7 @@ const Checkout = () => {
       navigate(`/orders/${response.data._id}`);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to place order. Please try again.');
+      setErrorDetails(err.response?.data?.details || null);
       console.error('Error placing order:', err);
     } finally {
       setSubmitting(false);
@@ -199,6 +202,13 @@ const Checkout = () => {
         {error && (
           <div className="alert alert-danger" role="alert">
             {error}
+            {errorDetails && Array.isArray(errorDetails) && errorDetails.length > 0 && (
+              <ul className="mt-2 mb-0">
+                {errorDetails.map((d, i) => (
+                  <li key={i}>{d}</li>
+                ))}
+              </ul>
+            )}
           </div>
         )}
 

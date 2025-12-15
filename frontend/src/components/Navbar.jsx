@@ -95,6 +95,11 @@ const Navbar = () => {
             {user ? (
               <>
                 <li className="nav-item">
+                  <Link className="nav-link" to="/profile" onClick={() => handleNavClick('/profile')}>
+                    Profile
+                  </Link>
+                </li>
+                <li className="nav-item">
                   <Link className="nav-link" to="/wishlist" onClick={() => handleNavClick('/wishlist')}>
                     Wishlist
                   </Link>

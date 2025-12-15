@@ -102,13 +102,18 @@ const orderSchema = new mongoose.Schema({
   }
 });
 
-// Generate unique order number
-orderSchema.pre('save', async function(next) {
+// Ensure orderNumber exists before validation
+orderSchema.pre('validate', function(next) {
   if (!this.orderNumber) {
     const timestamp = Date.now().toString(36).toUpperCase();
     const random = Math.random().toString(36).substring(2, 6).toUpperCase();
     this.orderNumber = `ORD-${timestamp}-${random}`;
   }
+  next();
+});
+
+// Update modified time on save
+orderSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
   next();
 });

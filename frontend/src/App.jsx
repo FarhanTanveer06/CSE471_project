@@ -14,6 +14,7 @@ import ResellProducts from './pages/ResellProducts';
 import ResellProductDetails from './pages/ResellProductDetails';
 import SellItem from './pages/SellItem';
 import MyResellItems from './pages/MyResellItems';
+import UserProfile from './pages/UserProfile';
 import AuthProvider from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
@@ -38,6 +39,7 @@ const App = () => (
         <Route path="/resell/:id" element={<ResellProductDetails />} />
         <Route path="/resell/sell" element={<ProtectedRoute><SellItem /></ProtectedRoute>} />
         <Route path="/resell/my-items" element={<ProtectedRoute><MyResellItems /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
       </Routes>
     </Router>
   </AuthProvider>
