@@ -103,7 +103,7 @@ const MyResellItems = () => {
                     src={product.images?.[0] || 'https://via.placeholder.com/300'}
                     className="card-img-top"
                     alt={product.name}
-                    style={{ height: '250px', objectFit: 'cover' }}
+                    style={{ height: '250px', objectFit: 'contain', backgroundColor: '#f8f9fa' }}
                   />
                   <div className="card-body">
                     <h5 className="card-title">{product.name}</h5>
