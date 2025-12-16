@@ -43,6 +43,7 @@ const orderRoutes = require('./routes/order.routes');
 const wishlistRoutes = require('./routes/wishlist.routes');
 const resellProductRoutes = require('./routes/resellProduct.routes');
 const weatherRoutes = require('./routes/weather.routes');
+const assistantRoutes = require('./routes/assistant.routes');
 const skinToneRoutes = require('./routes/skinTone.routes');
 
 app.use('/api/auth', authRoutes);
@@ -56,6 +57,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/resell', resellProductRoutes);
 app.use('/api/weather', weatherRoutes);
+app.use('/api/assistant', assistantRoutes);
 app.use('/api/skin-tone', skinToneRoutes);
 
 const connectDB = async () => {

@@ -15,6 +15,7 @@ import ResellProductDetails from './pages/ResellProductDetails';
 import SellItem from './pages/SellItem';
 import MyResellItems from './pages/MyResellItems';
 import UserProfile from './pages/UserProfile';
+import OutfitAssistant from './pages/OutfitAssistant';
 import SkinToneAnalysis from './pages/SkinToneAnalysis';
 import AuthProvider from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -42,6 +43,7 @@ const App = () => (
         <Route path="/resell/sell" element={<ProtectedRoute><SellItem /></ProtectedRoute>} />
         <Route path="/resell/my-items" element={<ProtectedRoute><MyResellItems /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
+        <Route path="/assistant" element={<ProtectedRoute><OutfitAssistant /></ProtectedRoute>} />
       </Routes>
     </Router>
   </AuthProvider>
