@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
   price: { type: Number, required: true },
-  category: { type: String, enum: ['shirts', 'pants', 'blazers'], required: true },
+  category: { type: String, enum: ['shirts', 'pants', 'blazers', 'panjabi'], required: true },
   type: { type: String, required: true }, // e.g., "Formal", "Casual", "Semi-formal"
   color: { type: String, required: true }, // e.g., "Black", "White", "Navy", "Gray", "Brown"
   sizes: [{ type: String, enum: ['S', 'M', 'L', 'XL', 'XXL'] }], // Array of available sizes

@@ -67,10 +67,12 @@ const Navbar = () => {
             <li className="nav-item"><Link className="nav-link" to="/products/category/shirts" onClick={() => handleNavClick('/products/category/shirts')}>Shirts</Link></li>
             <li className="nav-item"><Link className="nav-link" to="/products/category/pants" onClick={() => handleNavClick('/products/category/pants')}>Pants</Link></li>
             <li className="nav-item"><Link className="nav-link" to="/products/category/blazers" onClick={() => handleNavClick('/products/category/blazers')}>Blazers</Link></li>
+            <li className="nav-item"><Link className="nav-link" to="/products/category/panjabi" onClick={() => handleNavClick('/products/category/panjabi')}>Panjabi</Link></li>
             <li className="nav-item"><Link className="nav-link" to="/resell" onClick={() => handleNavClick('/resell')}>Thrift Items</Link></li>
             {user && (
               <>
                 <li className="nav-item"><Link className="nav-link" to="/mixup-and-see" onClick={() => handleNavClick('/mixup-and-see')}>Mixup & See</Link></li>
+                <li className="nav-item"><Link className="nav-link" to="/assistant" onClick={() => handleNavClick('/assistant')}>Outfit Assistant</Link></li>
                 <li className="nav-item"><Link className="nav-link" to="/skin-tone-analysis" onClick={() => handleNavClick('/skin-tone-analysis')}>Find My Colors</Link></li>
               </>
             )}
