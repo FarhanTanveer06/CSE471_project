@@ -15,6 +15,7 @@ import ResellProductDetails from './pages/ResellProductDetails';
 import SellItem from './pages/SellItem';
 import MyResellItems from './pages/MyResellItems';
 import UserProfile from './pages/UserProfile';
+import SkinToneAnalysis from './pages/SkinToneAnalysis';
 import AuthProvider from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
@@ -34,6 +35,7 @@ const App = () => (
         <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
         <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
         <Route path="/mixup-and-see" element={<ProtectedRoute><MixupAndSee /></ProtectedRoute>} />
+        <Route path="/skin-tone-analysis" element={<ProtectedRoute><SkinToneAnalysis /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
         <Route path="/resell" element={<ResellProducts />} />
         <Route path="/resell/:id" element={<ResellProductDetails />} />
