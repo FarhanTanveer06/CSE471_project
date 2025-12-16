@@ -207,6 +207,17 @@ a:focus {
   outline-offset: 2px;
 }
 
+/* Product Card Images - Ensure full image fits */
+.card-img-top {
+  width: 100%;
+  height: auto;
+  min-height: 200px;
+  max-height: 300px;
+  object-fit: contain;
+  background-color: #f8f9fa;
+  padding: 0.5rem;
+}
+
 /* Responsive Typography */
 @media (max-width: 768px) {
   .premium-hero h1 {
