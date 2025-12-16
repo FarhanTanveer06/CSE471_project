@@ -29,7 +29,7 @@ const Home = () => {
       buttonLink: '/products'
     },
     {
-      image: 'https://www.styledbysally.com.au/wp-content/uploads/2017/08/skintoneguide.jpg?auto=compress&w=1920&h=800&fit=crop',
+      image: 'https://bizweb.dktcdn.net/100/500/891/files/coordinating-men-s-summer-clothing-colors.jpg?auto=compress&w=1920&h=800&fit=crop',
       title: 'Choose what suits you',
       subtitle: 'Match the outfit according to your skin tone',
       buttonText: 'Shop Now',
@@ -43,7 +43,7 @@ const Home = () => {
       buttonLink: '/products'
     }
   ];
-
+//new
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
