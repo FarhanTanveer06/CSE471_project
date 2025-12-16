@@ -4,6 +4,11 @@
   box-sizing: border-box;
 }
 
+html {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -13,6 +18,15 @@ body {
   background-color: var(--background);
   color: var(--foreground);
   line-height: 1.6;
+  overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
+}
+
+#root {
+  overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
 }
 
 /* Premium Card Styles */
@@ -216,6 +230,45 @@ a:focus {
   object-fit: contain;
   background-color: #f8f9fa;
   padding: 0.5rem;
+}
+
+/* Prevent horizontal overflow from containers */
+.container,
+.container-fluid {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Ensure all images don't overflow */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Prevent tables from causing overflow */
+table {
+  max-width: 100%;
+  table-layout: auto;
+}
+
+/* Prevent pre and code blocks from causing overflow */
+pre,
+code {
+  max-width: 100%;
+  overflow-x: auto;
+  word-wrap: break-word;
+}
+
+/* Ensure all row elements don't overflow */
+.row {
+  margin-left: 0;
+  margin-right: 0;
+  max-width: 100%;
+}
+
+/* Fix for Bootstrap columns */
+[class*="col-"] {
+  max-width: 100%;
 }
 
 /* Responsive Typography */
