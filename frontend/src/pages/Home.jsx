@@ -43,7 +43,7 @@ const Home = () => {
       buttonLink: '/products'
     }
   ];
-
+//new
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
