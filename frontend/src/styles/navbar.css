@@ -30,9 +30,7 @@
   text-decoration: none;
   transition: all 0.3s ease;
   white-space: nowrap;
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  flex-shrink: 0;
 }
 
 .premium-navbar .navbar-brand:hover {
@@ -167,7 +165,6 @@
 
   .premium-navbar .navbar-brand {
     font-size: 1.25rem;
-    max-width: 150px;
   }
 
   .premium-navbar .navbar-nav {
@@ -194,13 +191,30 @@
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
     flex-wrap: nowrap;
   }
 
+  /* Custom scrollbar for Webkit browsers (Chrome, Safari, Edge) */
   .premium-navbar .navbar-nav.me-auto::-webkit-scrollbar {
-    display: none;
+    height: 4px;
+    display: block;
+  }
+
+  .premium-navbar .navbar-nav.me-auto::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+  }
+
+  .premium-navbar .navbar-nav.me-auto::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+    transition: background 0.3s ease;
+  }
+
+  .premium-navbar .navbar-nav.me-auto::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.7);
   }
 
   .premium-navbar .navbar-nav:last-child {
