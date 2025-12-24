@@ -12,6 +12,11 @@ const Cart = () => {
   const [error, setError] = useState(null);
   const [updating, setUpdating] = useState({});
   const [attemptedQuantities, setAttemptedQuantities] = useState({});
+  const [inputQuantities, setInputQuantities] = useState({});
+
+  const cleanErrorMessage = (message) => {
+    return message.replace(/http:\/\/localhost:\d+/gi, '').replace(/localhost/gi, '').trim() || message;
+  };
 
   useEffect(() => {
     if (!user) {
@@ -19,7 +24,7 @@ const Cart = () => {
       return;
     }
     fetchCart();
-  }, [user, navigate]);
+  }, [user]);
 
   const fetchCart = async () => {
     try {
@@ -28,10 +33,8 @@ const Cart = () => {
       setCart(response.data);
       setError(null);
     } catch (err) {
-      let errorMessage = err.response?.data?.message || 'Failed to load cart';
-      // Remove localhost references from error message
-      errorMessage = errorMessage.replace(/http:\/\/localhost:\d+/gi, '').replace(/localhost/gi, '').trim();
-      setError(errorMessage || 'Failed to load cart');
+      const errorMessage = err.response?.data?.message || 'Failed to load cart';
+      setError(cleanErrorMessage(errorMessage));
       console.error('Error fetching cart:', err);
     } finally {
       setLoading(false);
@@ -41,26 +44,31 @@ const Cart = () => {
   const updateQuantity = async (itemId, newQuantity) => {
     if (newQuantity < 1) return;
     
-    // Store attempted quantity to show warning even if backend rejects
-    setAttemptedQuantities(prev => ({ ...prev, [itemId]: newQuantity }));
+    setAttemptedQuantities(prev => {
+      if (prev[itemId] === undefined) {
+        return { ...prev, [itemId]: newQuantity };
+      }
+      return prev;
+    });
     
     try {
       setUpdating(prev => ({ ...prev, [itemId]: true }));
       const response = await api.put(`/cart/item/${itemId}`, { quantity: newQuantity });
       setCart(response.data);
-      // Clear attempted quantity on success
       setAttemptedQuantities(prev => {
         const newState = { ...prev };
         delete newState[itemId];
         return newState;
       });
+      setInputQuantities(prev => {
+        const newState = { ...prev };
+        delete newState[itemId];
+        return newState;
+      });
     } catch (err) {
-      let errorMessage = err.response?.data?.message || 'Failed to update quantity';
-      // Remove localhost references from error message
-      errorMessage = errorMessage.replace(/http:\/\/localhost:\d+/gi, '').replace(/localhost/gi, '').trim();
-      alert(errorMessage || 'Failed to update quantity');
+      const errorMessage = err.response?.data?.message || 'Failed to update quantity';
+      alert(cleanErrorMessage(errorMessage));
       console.error('Error updating quantity:', err);
-      // Refresh cart on error
       await fetchCart();
     } finally {
       setUpdating(prev => ({ ...prev, [itemId]: false }));
@@ -76,12 +84,9 @@ const Cart = () => {
       const response = await api.delete(`/cart/item/${itemId}`);
       setCart(response.data);
     } catch (err) {
-      let errorMessage = err.response?.data?.message || 'Failed to remove item';
-      // Remove localhost references from error message
-      errorMessage = errorMessage.replace(/http:\/\/localhost:\d+/gi, '').replace(/localhost/gi, '').trim();
-      alert(errorMessage || 'Failed to remove item');
+      const errorMessage = err.response?.data?.message || 'Failed to remove item';
+      alert(cleanErrorMessage(errorMessage));
       console.error('Error removing item:', err);
-      // Refresh cart on error
       fetchCart();
     }
   };
@@ -95,12 +100,9 @@ const Cart = () => {
       await api.delete('/cart/clear');
       setCart({ items: [] });
     } catch (err) {
-      let errorMessage = err.response?.data?.message || 'Failed to clear cart';
-      // Remove localhost references from error message
-      errorMessage = errorMessage.replace(/http:\/\/localhost:\d+/gi, '').replace(/localhost/gi, '').trim();
-      alert(errorMessage || 'Failed to clear cart');
+      const errorMessage = err.response?.data?.message || 'Failed to clear cart';
+      alert(cleanErrorMessage(errorMessage));
       console.error('Error clearing cart:', err);
-      // Refresh cart on error
       fetchCart();
     }
   };
@@ -132,13 +134,11 @@ const Cart = () => {
   }
 
   if (error && !cart) {
-    // Remove localhost references from error message
-    const cleanError = error.replace(/http:\/\/localhost:\d+/gi, '').replace(/localhost/gi, '').trim();
     return (
       <div className="container py-5">
         <div className="alert alert-danger" role="alert">
           <h5 className="alert-heading">Error Loading Cart</h5>
-          <p>{cleanError || 'Failed to load cart. Please try again.'}</p>
+          <p>{error || 'Failed to load cart. Please try again.'}</p>
           <hr />
           <button className="btn btn-primary" onClick={fetchCart}>
             Retry
@@ -166,12 +166,10 @@ const Cart = () => {
               <div className="cart-items">
                 {cart.items.map((item) => {
                   const product = item.productId;
-                  // Skip rendering if product is not populated or missing
                   if (!product || !product._id) {
                     return null;
                   }
-                  // Check if stock is insufficient
-                  // Get product availability - handle various data types
+                  
                   let productAvailability = 0;
                   if (product.availability !== undefined && product.availability !== null) {
                     productAvailability = Number(product.availability);
@@ -181,18 +179,14 @@ const Cart = () => {
                   }
                   
                   const itemQuantity = Number(item.quantity) || 1;
-                  // Check if user attempted to set a higher quantity
                   const attemptedQuantity = attemptedQuantities[item._id];
                   const quantityToCheck = attemptedQuantity !== undefined ? attemptedQuantity : itemQuantity;
-                  
-                  // Show warning if requested quantity exceeds available stock
-                  // Show warning if we have valid availability data and quantity exceeds it
                   const isStockInsufficient = productAvailability > 0 && quantityToCheck > productAvailability;
                   
                   return (
                     <div key={item._id} className="cart-item mb-3 p-3 border rounded">
                       {isStockInsufficient && (
-                        <div className="alert alert-warning mb-2 py-2" role="alert" style={{ display: 'block' }}>
+                        <div className="alert alert-warning mb-2 py-2" role="alert">
                           <strong style={{ color: '#856404' }}>Insufficient stock available</strong>
                         </div>
                       )}
@@ -235,27 +229,54 @@ const Cart = () => {
                             </button>
                             <input
                               type="number"
-                              className="form-control text-center"
-                              value={item.quantity}
+                              className="form-control text-center quantity-input"
+                              value={inputQuantities[item._id] !== undefined ? inputQuantities[item._id] : item.quantity}
                               onChange={(e) => {
+                                const val = e.target.value;
+                                if (val === '') {
+                                  setInputQuantities(prev => ({ ...prev, [item._id]: '' }));
+                                  return;
+                                }
+                                const numVal = parseInt(val);
+                                if (!isNaN(numVal) && numVal >= 1) {
+                                  setInputQuantities(prev => ({ ...prev, [item._id]: numVal }));
+                                }
+                              }}
+                              onBlur={(e) => {
                                 const val = parseInt(e.target.value) || 1;
                                 const maxQuantity = productAvailability > 0 ? productAvailability : 999;
-                                const finalVal = val > maxQuantity ? maxQuantity : val;
-                                updateQuantity(item._id, finalVal);
+                                const finalVal = Math.min(Math.max(1, val), maxQuantity);
+                                setInputQuantities(prev => {
+                                  const newState = { ...prev };
+                                  delete newState[item._id];
+                                  return newState;
+                                });
+                                if (finalVal !== item.quantity) {
+                                  updateQuantity(item._id, finalVal);
+                                }
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.target.blur();
+                                }
                               }}
                               min="1"
                               max={productAvailability > 0 ? productAvailability : 999}
-                              style={{ maxWidth: '60px' }}
+                              style={{ maxWidth: '80px' }}
                             />
                             <button
                               className="btn btn-outline-secondary"
                               type="button"
-                              onClick={() => updateQuantity(item._id, item.quantity + 1)}
-                              disabled={updating[item._id]}
+                              onClick={() => {
+                                const newQuantity = item.quantity + 1;
+                                setAttemptedQuantities(prev => ({ ...prev, [item._id]: newQuantity }));
+                                updateQuantity(item._id, newQuantity);
+                              }}
                             >
                               +
                             </button>
                           </div>
+                          <small className="text-muted d-block mt-1">Type quantity and press Enter</small>
                         </div>
                         <div className="col-md-2 text-center">
                           <p className="mb-0 fw-bold">BDT {(item.price * item.quantity).toFixed(2)}</p>
