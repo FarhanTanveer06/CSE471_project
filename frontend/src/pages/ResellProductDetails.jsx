@@ -50,7 +50,7 @@ const ResellProductDetails = () => {
       return;
     }
 
-    if (!window.confirm(`Are you sure you want to purchase "${product.name}" for $${product.price}?`)) {
+    if (!window.confirm(`Are you sure you want to purchase "${product.name}" for BDT${product.price}?`)) {
       return;
     }
 
@@ -142,10 +142,10 @@ const ResellProductDetails = () => {
 
             <h1 className="product-title">{product.name}</h1>
             
-            <div className="product-price">${product.price}</div>
+            <div className="product-price">BDT {product.price}</div>
             {product.originalPrice && (
               <p className="text-muted">
-                <small>Original Price: ${product.originalPrice}</small>
+                <small>Original Price: BDT {product.originalPrice}</small>
               </p>
             )}
 

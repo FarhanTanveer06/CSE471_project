@@ -7,6 +7,7 @@ const categories = [
   { name: 'Shirts', path: '/products/category/shirts', img: 'https://imagescdn.thecollective.in/img/app/product/1/1135748-20378220.jpg?auto=compress&w=600&h=360&fit=crop' },
   { name: 'Pants', path: '/products/category/pants', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUYRLMZLVfXKXas3Shl-QUB2tu8lnyN1e-Hw&s?auto=compress&w=600&h=360&fit=crop' },
   { name: 'Blazers', path: '/products/category/blazers', img: 'https://m.media-amazon.com/images/I/41-aOk7vPSL._AC_SX679_.jpg?auto=compress&w=600&h=360&fit=crop' },
+  { name: 'Panjabi', path: '/products/category/panjabi', img: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=compress&w=600&h=360&fit=crop' },
 ];
 
 const Home = () => {

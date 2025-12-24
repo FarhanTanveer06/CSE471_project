@@ -69,6 +69,7 @@ const Navbar = () => {
             <li className="nav-item"><Link className="nav-link" to="/products/category/blazers" onClick={() => handleNavClick('/products/category/blazers')}>Blazers</Link></li>
             <li className="nav-item"><Link className="nav-link" to="/products/category/panjabi" onClick={() => handleNavClick('/products/category/panjabi')}>Panjabi</Link></li>
             <li className="nav-item"><Link className="nav-link" to="/resell" onClick={() => handleNavClick('/resell')}>Thrift Items</Link></li>
+            <li className="nav-item"><Link className="nav-link" to="/culture-events" onClick={() => handleNavClick('/culture-events')}>Culture & Events</Link></li>
             {user && (
               <>
                 <li className="nav-item"><Link className="nav-link" to="/mixup-and-see" onClick={() => handleNavClick('/mixup-and-see')}>Mixup & See</Link></li>

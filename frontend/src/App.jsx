@@ -17,6 +17,7 @@ import MyResellItems from './pages/MyResellItems';
 import UserProfile from './pages/UserProfile';
 import OutfitAssistant from './pages/OutfitAssistant';
 import SkinToneAnalysis from './pages/SkinToneAnalysis';
+import CultureEvents from './pages/CultureEvents';
 import AuthProvider from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
@@ -44,6 +45,7 @@ const App = () => (
         <Route path="/resell/my-items" element={<ProtectedRoute><MyResellItems /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
         <Route path="/assistant" element={<ProtectedRoute><OutfitAssistant /></ProtectedRoute>} />
+        <Route path="/culture-events" element={<CultureEvents />} />
       </Routes>
     </Router>
   </AuthProvider>

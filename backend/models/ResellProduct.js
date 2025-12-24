@@ -8,7 +8,7 @@ const resellProductSchema = new mongoose.Schema({
   },
   name: { type: String, required: true },
   price: { type: Number, required: true, min: 0 },
-  category: { type: String, enum: ['shirts', 'pants', 'blazers'], required: true },
+  category: { type: String, enum: ['shirts', 'pants', 'blazers', 'panjabi'], required: true },
   type: { type: String, required: true },
   color: { type: String, required: true },
   size: { type: String, enum: ['S', 'M', 'L', 'XL', 'XXL'], required: true },

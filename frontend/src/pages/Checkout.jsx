@@ -564,7 +564,7 @@ const Checkout = () => {
                             Size: {item.size} | Qty: {item.quantity}
                           </div>
                           <div className="checkout-item-price">
-                            ${(item.price * item.quantity).toFixed(2)}
+                            BDT {(item.price * item.quantity).toFixed(2)}
                           </div>
                         </div>
                       </div>
@@ -575,7 +575,7 @@ const Checkout = () => {
                 <div className="checkout-summary-breakdown">
                   <div className="checkout-summary-row">
                     <span>Subtotal</span>
-                    <span>${getSubtotal().toFixed(2)}</span>
+                    <span>BDT {getSubtotal().toFixed(2)}</span>
                   </div>
                   <div className="checkout-summary-row">
                     <span>Shipping</span>
@@ -583,20 +583,20 @@ const Checkout = () => {
                       {getShippingCost() === 0 ? (
                         <span className="text-success">Free</span>
                       ) : (
-                        `$${getShippingCost().toFixed(2)}`
+                        `BDT ${getShippingCost().toFixed(2)}`
                       )}
                     </span>
                   </div>
                   {getSubtotal() < 100 && (
                     <div className="checkout-summary-note">
                       <small className="text-muted">
-                        Add ${(100 - getSubtotal()).toFixed(2)} more for free shipping!
+                        Add BDT {(100 - getSubtotal()).toFixed(2)} more for free shipping!
                       </small>
                     </div>
                   )}
                   <div className="checkout-summary-total">
                     <span>Total</span>
-                    <span>${getTotal().toFixed(2)}</span>
+                    <span>BDT {getTotal().toFixed(2)}</span>
                   </div>
                 </div>
 

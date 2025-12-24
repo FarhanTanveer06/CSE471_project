@@ -309,6 +309,7 @@ const Products = () => {
                 <option value="shirts">Shirts</option>
                 <option value="pants">Pants</option>
                 <option value="blazers">Blazers</option>
+                <option value="panjabi">Panjabi</option>
               </select>
             </div>
 
@@ -449,7 +450,7 @@ const Products = () => {
                   </div>
                   <div className="card-body">
                     <h5 className="card-title">{prod.name}</h5>
-                    <div className="card-price">${prod.price}</div>
+                    <div className="card-price">BDT {prod.price}</div>
                     <div className="mb-2">
                       <span className="premium-badge premium-badge-secondary me-1">{prod.category}</span>
                       {prod.type && (
