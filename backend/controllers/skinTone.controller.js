@@ -177,23 +177,23 @@ function getRecommendedColorsByBrightness(skinBrightness, skinTone) {
       description: 'Deep, rich colors like black, navy blue, and dark green will create strong contrast with your dark skin, making it appear lighter and more vibrant.'
     },
     'medium-dark': {
-      best: ['Black','Navy Blue', 'Olive Green', 'Deep Teal', 'Rust', 'Wine'],
+      best: ['Black','Navy Blue', 'Olive Green', 'Deep Teal', 'Wine'],
       avoid: ['Beige', 'Light Brown', 'Light Grey', 'Khaki', 'Tan', 'Cream'],
       description: 'Rich colors like Black, navy blue, olive green, and rust will create flattering contrast with your deeper wheatish skin, making it appear lighter.'
     },
     'medium': {
-      best: ['Royal Blue', 'Forest Green', 'Mustard', 'Brick Red', 'Chocolate Brown'],
+      best: ['Royal Blue', 'Forest Green', 'Mustard', 'Chocolate Brown'],
       avoid: ['Beige', 'Khaki', 'Dusty Pink', 'Light Brown', 'Tan', 'Cream'],
       description: 'Vibrant colors like royal blue, forest green, and mustard will enhance your medium wheatish skin tone beautifully.'
     },
     'medium-light': {
-      best: ['Dark Navy', 'Deep Maroon', 'Bottle Green', 'Charcoal'],
+      best: ['Dark Navy', 'Deep Maroon', 'Green', 'Charcoal'],
       avoid: ['Beige', 'Khaki', 'Dusty Pink', 'Light Brown', 'Tan', 'Cream'],
       description: 'Darker colors like dark navy, deep maroon, and charcoal will make your light-wheatish skin appear brighter and more radiant.'
     },
     'light': {
-      best: ['Black', 'Deep Blue', 'Dark Maroon', 'Dark Grey'],
-      avoid: ['White', 'Cream', 'Pastel Yellow', 'Baby Pink', 'Sky Blue', 'Ivory', 'Off-White'],
+      best: ['Black', 'Dark Blue', 'Dark Grey', 'Baby Pink', 'Dark Brown', 'Sky Blue', 'Blue', 'Red', 'White', 'Cream'],
+      avoid: ['Pastel Yellow', 'Ivory', 'Off-White'],
       description: 'Dark, rich colors like black, deep blue, and dark maroon will make your fair skin look even lighter. Avoid light colors that can make you look washed out.'
     }
   };
