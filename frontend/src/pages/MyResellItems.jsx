@@ -108,7 +108,7 @@ const MyResellItems = () => {
                   <div className="card-body">
                     <h5 className="card-title">{product.name}</h5>
                     <div className="d-flex justify-content-between align-items-center mb-2">
-                      <span className="h5 mb-0 text-primary">${product.price}</span>
+                      <span className="h5 mb-0 text-primary">BDT {product.price}</span>
                       <span className={`badge ${product.status === 'available' ? 'bg-success' : product.status === 'sold' ? 'bg-danger' : 'bg-warning'}`}>
                         {product.status}
                       </span>

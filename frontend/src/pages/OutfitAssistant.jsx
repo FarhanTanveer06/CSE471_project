@@ -87,7 +87,7 @@ const OutfitAssistant = () => {
                     <div className="card-body d-flex flex-column">
                       <h6 className="card-title">{product.name}</h6>
                       <div className="mb-1">{product.category} • {product.type}</div>
-                      <div className="mb-2">৳ {product.price}</div>
+                      <div className="mb-2">BDT {product.price}</div>
                       <div className="mt-auto d-flex">
                         <Link to={`/products/${product._id}`} className="btn btn-outline-primary me-2">View</Link>
                         {isAvailable && (

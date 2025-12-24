@@ -101,7 +101,7 @@ const UserProfile = () => {
                         <div className="text-end">
                           <span className="badge bg-secondary me-2">{order.orderStatus}</span>
                           <span className="badge bg-info text-dark me-2">{order.paymentMethod}</span>
-                          <span className="badge bg-success">৳ {order.totalAmount}</span>
+                          <span className="badge bg-success">BDT {order.totalAmount}</span>
                         </div>
                       </div>
                       <div className="mt-3">
@@ -131,15 +131,15 @@ const UserProfile = () => {
                                   </td>
                                   <td>{item.size}</td>
                                   <td>{item.quantity}</td>
-                                  <td>৳ {item.price}</td>
-                                  <td>৳ {item.total}</td>
+                                  <td>BDT {item.price}</td>
+                                  <td>BDT {item.total}</td>
                                 </tr>
                               );
                             })}
                           </tbody>
                         </table>
                         <div className="mt-2 text-muted">
-                          Subtotal: ৳ {order.subtotal} • Shipping: ৳ {order.shippingCost}
+                          Subtotal: BDT {order.subtotal} • Shipping: BDT {order.shippingCost}
                         </div>
                       </div>
                     </div>

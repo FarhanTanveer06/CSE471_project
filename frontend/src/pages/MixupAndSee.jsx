@@ -239,7 +239,7 @@ const MixupAndSee = () => {
                         </div>
                         <div className="mixup-item-info">
                           <h4>{product.name}</h4>
-                          <p className="mixup-item-price">${product.price}</p>
+                          <p className="mixup-item-price">BDT {product.price}</p>
                           
                           {/* Size Selection */}
                           {product.sizes && product.sizes.length > 0 && (
@@ -337,7 +337,7 @@ const MixupAndSee = () => {
                         </div>
                         <div className="mixup-item-info">
                           <h4>{product.name}</h4>
-                          <p className="mixup-item-price">${product.price}</p>
+                          <p className="mixup-item-price">BDT {product.price}</p>
                           
                           {/* Size Selection */}
                           {product.sizes && product.sizes.length > 0 && (

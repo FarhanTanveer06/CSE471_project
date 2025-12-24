@@ -224,7 +224,7 @@ const SkinToneAnalysis = () => {
                     <div className="product-info">
                       <h5>{product.name}</h5>
                       <p className="text-muted">{product.color}</p>
-                      <p className="price fw-bold">${product.price}</p>
+                      <p className="price fw-bold">BDT {product.price}</p>
                       <button 
                         className="btn btn-sm btn-primary"
                         onClick={() => navigate(`/products/${product._id}`)}

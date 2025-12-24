@@ -169,7 +169,7 @@ const Wishlist = () => {
                       <img src={imageSrc} alt={product.name} className="discount-image" />
                       <div className="discount-info">
                         <h5>{product.name}</h5>
-                        <div className="discount-price">${product.price}</div>
+                        <div className="discount-price">BDT {product.price}</div>
                       </div>
                     </Link>
                     <div className="discount-actions">
@@ -256,7 +256,7 @@ const Wishlist = () => {
                             <span className="wishlist-item-type">{product.type}</span>
                           )}
                         </div>
-                        <div className="wishlist-item-price">${product.price}</div>
+                        <div className="wishlist-item-price">BDT {product.price}</div>
                         {product.averageRating && (
                           <div className="wishlist-item-rating">
                             ⭐ {product.averageRating.toFixed(1)} ({product.totalReviews || 0})

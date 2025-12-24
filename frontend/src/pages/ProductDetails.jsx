@@ -462,7 +462,7 @@ const ProductDetails = () => {
             <h1 className="product-title">{product.name}</h1>
             
             {/* Price */}
-            <div className="product-price">${product.price}</div>
+            <div className="product-price">BDT {product.price}</div>
 
             {/* Rating Display */}
             {product.averageRating && (
@@ -692,7 +692,7 @@ const ProductDetails = () => {
                             <span className="outfit-suggestion-type">{suggestedProduct.type}</span>
                           )}
                         </div>
-                        <div className="outfit-suggestion-price">${suggestedProduct.price}</div>
+                        <div className="outfit-suggestion-price">BDT {suggestedProduct.price}</div>
                       </div>
                     </Link>
                     <div className="outfit-suggestion-actions">

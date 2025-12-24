@@ -203,3 +203,120 @@ exports.getComplementaryProducts = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+// Get outfit suggestions based on Bangladeshi culture and events
+exports.getEventOutfitSuggestions = async (req, res) => {
+  try {
+    const { event } = req.query;
+
+    if (!event) {
+      return res.status(400).json({ message: 'Event parameter is required' });
+    }
+
+    // Define event-based outfit requirements
+    const eventRules = {
+      'pahela-baishakh': {
+        categories: ['panjabi'],
+        colors: ['red', 'white', 'maroon'],
+        description: 'For Pahela Baishakh, we suggest Panjabi in traditional colors: red, white, or maroon to celebrate the Bengali New Year with style.'
+      },
+      'language-martyrs-day': {
+        categories: ['panjabi'],
+        colors: ['black', 'white'],
+        description: 'For Language Martyrs Day, we suggest Panjabi in black and white to honor the language movement with respect and dignity.'
+      },
+      'wedding': {
+        categories: ['blazers', 'panjabi', 'pants'],
+        colors: [],
+        description: 'For weddings, we suggest a complete formal ensemble including Blazer, Panjabi, and Pants for a sophisticated and elegant look.'
+      },
+      'eid': {
+        categories: ['panjabi', 'shirts', 'pants'],
+        colors: [],
+        description: 'For Eid celebrations, we suggest Panjabi, Shirts, and Pants for a traditional yet modern festive look.'
+      },
+      'puja': {
+        categories: ['panjabi'],
+        colors: [],
+        description: 'For Puja celebrations, we suggest Panjabi in traditional styles suitable for religious ceremonies.'
+      },
+      'victory-day': {
+        categories: ['panjabi'],
+        colors: ['green', 'red', 'maroon'],
+        description: 'For Victory Day, we suggest Panjabi in green, red, and maroon to honor the colors of the Bangladeshi flag and celebrate independence.'
+      }
+    };
+
+    const rule = eventRules[event.toLowerCase()];
+
+    if (!rule) {
+      return res.status(400).json({ message: 'Invalid event. Supported events: pahela-baishakh, language-martyrs-day, wedding, eid, puja, victory-day' });
+    }
+
+    // Build filter
+    const filter = {
+      category: { $in: rule.categories },
+      availability: { $gt: 0 } // Only available products
+    };
+
+    // Add strict color filter if specified
+    if (rule.colors.length > 0) {
+      // Use $or with exact case-insensitive color matching
+      // This ensures only products with exactly matching colors are returned
+      filter.$or = rule.colors.map(color => ({
+        color: { $regex: `^${color}$`, $options: 'i' }
+      }));
+    }
+
+    // Fetch products with strict filtering
+    let products = await Product.find(filter)
+      .sort({ featured: -1, createdAt: -1 })
+      .limit(50);
+
+    // Apply additional strict filtering in JavaScript to ensure exact matches
+    // This handles cases where color might contain additional words (e.g., "Light Red" should not match "Red" for strict filtering)
+    if (rule.colors.length > 0) {
+      const normalizedColors = rule.colors.map(c => c.toLowerCase().trim());
+      products = products.filter(product => {
+        const productColor = product.color.toLowerCase().trim();
+        // Check if product color exactly matches one of the allowed colors
+        return normalizedColors.some(allowedColor => productColor === allowedColor);
+      });
+    }
+
+    // Group products by category for better organization
+    const groupedProducts = {};
+    rule.categories.forEach(cat => {
+      groupedProducts[cat] = products.filter(p => p.category === cat);
+    });
+
+    // Sort products by featured and date for consistent ordering
+    Object.keys(groupedProducts).forEach(cat => {
+      groupedProducts[cat].sort((a, b) => {
+        if (a.featured !== b.featured) return b.featured - a.featured;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+    });
+
+    // Rebuild products array from grouped products
+    products = [];
+    Object.values(groupedProducts).forEach(catProducts => {
+      products.push(...catProducts);
+    });
+
+    // Final sort by featured and date
+    products.sort((a, b) => {
+      if (a.featured !== b.featured) return b.featured - a.featured;
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+
+    res.json({
+      event: event,
+      description: rule.description,
+      suggestions: groupedProducts,
+      allProducts: products.slice(0, 20) // Return first 20 for display
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

@@ -279,6 +279,7 @@ const AdminDashboard = () => {
                           <option value="shirts">Shirts</option>
                           <option value="pants">Pants</option>
                           <option value="blazers">Blazers</option>
+                          <option value="panjabi">Panjabi</option>
                         </select>
                       </div>
                       <div className="col-md-6 mb-3">

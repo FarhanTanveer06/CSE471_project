@@ -122,7 +122,7 @@ const SellItem = () => {
               </div>
 
               <div className="col-md-6 mb-3">
-                <label className="form-label">Selling Price ($) *</label>
+                <label className="form-label">Selling Price (BDT) *</label>
                 <input
                   type="number"
                   className="form-control"
@@ -148,6 +148,7 @@ const SellItem = () => {
                   <option value="shirts">Shirts</option>
                   <option value="pants">Pants</option>
                   <option value="blazers">Blazers</option>
+                  <option value="panjabi">Panjabi</option>
                 </select>
               </div>
 
@@ -224,7 +225,7 @@ const SellItem = () => {
               </div>
 
               <div className="col-md-6 mb-3">
-                <label className="form-label">Original Price ($)</label>
+                <label className="form-label">Original Price (BDT)</label>
                 <input
                   type="number"
                   className="form-control"
