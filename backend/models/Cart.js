@@ -3,8 +3,14 @@ const mongoose = require('mongoose');
 const cartItemSchema = new mongoose.Schema({
   productId: { 
     type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Product', 
-    required: true 
+    required: true,
+    refPath: 'items.productType'
+  },
+  productType: {
+    type: String,
+    enum: ['Product', 'ResellProduct'],
+    required: true,
+    default: 'Product'
   },
   quantity: { 
     type: Number, 
@@ -20,6 +26,11 @@ const cartItemSchema = new mongoose.Schema({
   price: { 
     type: Number, 
     required: true 
+  },
+  sellerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: false // Only for resell products
   }
 });
 

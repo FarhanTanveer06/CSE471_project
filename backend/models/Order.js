@@ -3,8 +3,14 @@ const mongoose = require('mongoose');
 const orderItemSchema = new mongoose.Schema({
   productId: { 
     type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Product', 
-    required: true 
+    required: true,
+    refPath: 'items.productType'
+  },
+  productType: {
+    type: String,
+    enum: ['Product', 'ResellProduct'],
+    required: true,
+    default: 'Product'
   },
   productName: { type: String, required: true },
   quantity: { 
@@ -24,6 +30,16 @@ const orderItemSchema = new mongoose.Schema({
   total: { 
     type: Number, 
     required: true 
+  },
+  sellerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: false // Only for resell products
+  },
+  sellerPaymentStatus: {
+    type: String,
+    enum: ['pending', 'completed', 'failed'],
+    default: 'pending' // Only for resell products
   }
 });
 

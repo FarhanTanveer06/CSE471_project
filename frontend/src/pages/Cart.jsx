@@ -170,24 +170,38 @@ const Cart = () => {
                     return null;
                   }
                   
+                  const isResellProduct = item.productType === 'ResellProduct';
+                  
                   let productAvailability = 0;
-                  if (product.availability !== undefined && product.availability !== null) {
+                  if (!isResellProduct && product.availability !== undefined && product.availability !== null) {
                     productAvailability = Number(product.availability);
                     if (isNaN(productAvailability)) {
                       productAvailability = 0;
                     }
+                  } else if (isResellProduct) {
+                    // For resell products, check status
+                    productAvailability = product.status === 'available' ? 1 : 0;
                   }
                   
                   const itemQuantity = Number(item.quantity) || 1;
                   const attemptedQuantity = attemptedQuantities[item._id];
                   const quantityToCheck = attemptedQuantity !== undefined ? attemptedQuantity : itemQuantity;
-                  const isStockInsufficient = productAvailability > 0 && quantityToCheck > productAvailability;
+                  const isStockInsufficient = !isResellProduct && productAvailability > 0 && quantityToCheck > productAvailability;
+                  const isResellUnavailable = isResellProduct && product.status !== 'available';
                   
                   return (
                     <div key={item._id} className="cart-item mb-3 p-3 border rounded">
+                      {isResellProduct && (
+                        <span className="badge bg-info mb-2">Preowned Item</span>
+                      )}
                       {isStockInsufficient && (
                         <div className="alert alert-warning mb-2 py-2" role="alert">
                           <strong style={{ color: '#856404' }}>Insufficient stock available</strong>
+                        </div>
+                      )}
+                      {isResellUnavailable && (
+                        <div className="alert alert-danger mb-2 py-2" role="alert">
+                          <strong>This item is no longer available</strong>
                         </div>
                       )}
                       <div className="row align-items-center">
@@ -205,10 +219,18 @@ const Cart = () => {
                         </div>
                         <div className="col-md-4">
                           <h5 className="mb-1">
-                            <Link to={`/products/${product._id}`} className="text-decoration-none">
+                            <Link 
+                              to={isResellProduct ? `/resell/${product._id}` : `/products/${product._id}`} 
+                              className="text-decoration-none"
+                            >
                               {product.name || 'Product'}
                             </Link>
                           </h5>
+                          {isResellProduct && item.sellerId && (
+                            <p className="text-muted mb-1">
+                              <small>Seller: {item.sellerId.name || 'Unknown'}</small>
+                            </p>
+                          )}
                           <p className="text-muted mb-1">
                             <small>Size: {item.size}</small>
                           </p>
@@ -218,65 +240,79 @@ const Cart = () => {
                         </div>
                         <div className="col-md-2">
                           <label className="form-label">Quantity</label>
-                          <div className="input-group">
-                            <button
-                              className="btn btn-outline-secondary"
-                              type="button"
-                              onClick={() => updateQuantity(item._id, item.quantity - 1)}
-                              disabled={updating[item._id] || item.quantity <= 1}
-                            >
-                              -
-                            </button>
-                            <input
-                              type="number"
-                              className="form-control text-center quantity-input"
-                              value={inputQuantities[item._id] !== undefined ? inputQuantities[item._id] : item.quantity}
-                              onChange={(e) => {
-                                const val = e.target.value;
-                                if (val === '') {
-                                  setInputQuantities(prev => ({ ...prev, [item._id]: '' }));
-                                  return;
-                                }
-                                const numVal = parseInt(val);
-                                if (!isNaN(numVal) && numVal >= 1) {
-                                  setInputQuantities(prev => ({ ...prev, [item._id]: numVal }));
-                                }
-                              }}
-                              onBlur={(e) => {
-                                const val = parseInt(e.target.value) || 1;
-                                const maxQuantity = productAvailability > 0 ? productAvailability : 999;
-                                const finalVal = Math.min(Math.max(1, val), maxQuantity);
-                                setInputQuantities(prev => {
-                                  const newState = { ...prev };
-                                  delete newState[item._id];
-                                  return newState;
-                                });
-                                if (finalVal !== item.quantity) {
-                                  updateQuantity(item._id, finalVal);
-                                }
-                              }}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                  e.target.blur();
-                                }
-                              }}
-                              min="1"
-                              max={productAvailability > 0 ? productAvailability : 999}
-                              style={{ maxWidth: '80px' }}
-                            />
-                            <button
-                              className="btn btn-outline-secondary"
-                              type="button"
-                              onClick={() => {
-                                const newQuantity = item.quantity + 1;
-                                setAttemptedQuantities(prev => ({ ...prev, [item._id]: newQuantity }));
-                                updateQuantity(item._id, newQuantity);
-                              }}
-                            >
-                              +
-                            </button>
-                          </div>
-                          <small className="text-muted d-block mt-1">Type quantity and press Enter</small>
+                          {isResellProduct ? (
+                            <div className="input-group">
+                              <input
+                                type="number"
+                                className="form-control text-center quantity-input"
+                                value="1"
+                                disabled
+                                style={{ maxWidth: '80px' }}
+                              />
+                            </div>
+                          ) : (
+                            <>
+                              <div className="input-group">
+                                <button
+                                  className="btn btn-outline-secondary"
+                                  type="button"
+                                  onClick={() => updateQuantity(item._id, item.quantity - 1)}
+                                  disabled={updating[item._id] || item.quantity <= 1}
+                                >
+                                  -
+                                </button>
+                                <input
+                                  type="number"
+                                  className="form-control text-center quantity-input"
+                                  value={inputQuantities[item._id] !== undefined ? inputQuantities[item._id] : item.quantity}
+                                  onChange={(e) => {
+                                    const val = e.target.value;
+                                    if (val === '') {
+                                      setInputQuantities(prev => ({ ...prev, [item._id]: '' }));
+                                      return;
+                                    }
+                                    const numVal = parseInt(val);
+                                    if (!isNaN(numVal) && numVal >= 1) {
+                                      setInputQuantities(prev => ({ ...prev, [item._id]: numVal }));
+                                    }
+                                  }}
+                                  onBlur={(e) => {
+                                    const val = parseInt(e.target.value) || 1;
+                                    const maxQuantity = productAvailability > 0 ? productAvailability : 999;
+                                    const finalVal = Math.min(Math.max(1, val), maxQuantity);
+                                    setInputQuantities(prev => {
+                                      const newState = { ...prev };
+                                      delete newState[item._id];
+                                      return newState;
+                                    });
+                                    if (finalVal !== item.quantity) {
+                                      updateQuantity(item._id, finalVal);
+                                    }
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                      e.target.blur();
+                                    }
+                                  }}
+                                  min="1"
+                                  max={productAvailability > 0 ? productAvailability : 999}
+                                  style={{ maxWidth: '80px' }}
+                                />
+                                <button
+                                  className="btn btn-outline-secondary"
+                                  type="button"
+                                  onClick={() => {
+                                    const newQuantity = item.quantity + 1;
+                                    setAttemptedQuantities(prev => ({ ...prev, [item._id]: newQuantity }));
+                                    updateQuantity(item._id, newQuantity);
+                                  }}
+                                >
+                                  +
+                                </button>
+                              </div>
+                              <small className="text-muted d-block mt-1">Type quantity and press Enter</small>
+                            </>
+                          )}
                         </div>
                         <div className="col-md-2 text-center">
                           <p className="mb-0 fw-bold">BDT {(item.price * item.quantity).toFixed(2)}</p>

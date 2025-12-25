@@ -1,6 +1,7 @@
 const Order = require('../models/Order');
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
+const ResellProduct = require('../models/ResellProduct');
 const User = require('../models/User');
 
 // Create a new order from cart
@@ -22,9 +23,22 @@ exports.createOrder = async (req, res) => {
     }
 
     // Get user's cart
-    const cart = await Cart.findOne({ userId }).populate('items.productId');
+    const cart = await Cart.findOne({ userId });
     if (!cart || !cart.items || cart.items.length === 0) {
       return res.status(400).json({ message: 'Cart is empty' });
+    }
+
+    // Manually populate products based on productType
+    for (let i = 0; i < cart.items.length; i++) {
+      const item = cart.items[i];
+      if (item.productType === 'ResellProduct') {
+        item.productId = await ResellProduct.findById(item.productId);
+        if (item.sellerId) {
+          item.sellerId = await User.findById(item.sellerId);
+        }
+      } else {
+        item.productId = await Product.findById(item.productId);
+      }
     }
 
     // Validate stock availability and prepare order items
@@ -38,10 +52,22 @@ exports.createOrder = async (req, res) => {
         return res.status(400).json({ message: `Product ${cartItem.productId} no longer exists` });
       }
 
-      if (product.availability < cartItem.quantity) {
-        return res.status(400).json({ 
-          message: `Insufficient stock for ${product.name}. Available: ${product.availability}, Requested: ${cartItem.quantity}` 
-        });
+      const isResellProduct = cartItem.productType === 'ResellProduct';
+
+      if (isResellProduct) {
+        // Validate resell product availability
+        if (product.status !== 'available') {
+          return res.status(400).json({ 
+            message: `${product.name} is no longer available` 
+          });
+        }
+      } else {
+        // Validate regular product availability
+        if (product.availability < cartItem.quantity) {
+          return res.status(400).json({ 
+            message: `Insufficient stock for ${product.name}. Available: ${product.availability}, Requested: ${cartItem.quantity}` 
+          });
+        }
       }
 
       const itemPrice = typeof product.price === 'number' ? product.price : Number(product.price);
@@ -54,11 +80,14 @@ exports.createOrder = async (req, res) => {
 
       orderItems.push({
         productId: product._id,
+        productType: cartItem.productType,
         productName: product.name,
         quantity: cartItem.quantity,
         size: cartItem.size,
         price: itemPrice,
-        total: itemTotal
+        total: itemTotal,
+        sellerId: isResellProduct ? cartItem.sellerId : undefined,
+        sellerPaymentStatus: isResellProduct ? 'pending' : undefined
       });
     }
 
@@ -136,11 +165,21 @@ exports.createOrder = async (req, res) => {
       throw saveErr;
     }
 
-    // Update product availability
+    // Update product availability and mark resell products as sold
     for (const item of orderItems) {
-      await Product.findByIdAndUpdate(item.productId, {
-        $inc: { availability: -item.quantity }
-      });
+      if (item.productType === 'ResellProduct') {
+        // Mark resell product as sold
+        await ResellProduct.findByIdAndUpdate(item.productId, {
+          status: 'sold',
+          soldTo: userId,
+          soldAt: new Date()
+        });
+      } else {
+        // Update regular product availability
+        await Product.findByIdAndUpdate(item.productId, {
+          $inc: { availability: -item.quantity }
+        });
+      }
     }
 
     // Clear cart after successful order
