@@ -27,6 +27,12 @@ const ProductDetails = () => {
   const [inWishlist, setInWishlist] = useState(false);
   const [addingToWishlist, setAddingToWishlist] = useState(false);
   const [weather, setWeather] = useState(null);
+  const [cartSuccessMessage, setCartSuccessMessage] = useState('');
+
+  // Scroll to top when component mounts or product ID changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -394,7 +400,11 @@ const ProductDetails = () => {
         quantity: 1,
         size: selectedSize || product.sizes?.[0] || 'M'
       });
-      alert('Item added to cart successfully!');
+      setCartSuccessMessage('Item added to cart successfully!');
+      // Auto-hide the message after 3 seconds
+      setTimeout(() => {
+        setCartSuccessMessage('');
+      }, 3000);
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to add item to cart');
       console.error('Error adding to cart:', err);
@@ -598,6 +608,13 @@ const ProductDetails = () => {
                 </table>
               </div>
             </div>
+
+            {/* Cart Success Message */}
+            {cartSuccessMessage && (
+              <div className="alert alert-success mt-3 mb-3" role="alert">
+                {cartSuccessMessage}
+              </div>
+            )}
 
             {/* Action Buttons */}
             <div className="product-actions">

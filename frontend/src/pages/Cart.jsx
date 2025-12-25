@@ -66,8 +66,6 @@ const Cart = () => {
         return newState;
       });
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Failed to update quantity';
-      alert(cleanErrorMessage(errorMessage));
       console.error('Error updating quantity:', err);
       await fetchCart();
     } finally {
