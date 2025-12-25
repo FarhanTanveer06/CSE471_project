@@ -13,6 +13,7 @@ const ResellProductDetails = () => {
   const [error, setError] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [purchasing, setPurchasing] = useState(false);
+  const [addingToCart, setAddingToCart] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -32,6 +33,39 @@ const ResellProductDetails = () => {
       fetchProduct();
     }
   }, [id]);
+
+  const handleAddToCart = async () => {
+    if (!user) {
+      alert('Please login to add items to cart');
+      navigate('/login');
+      return;
+    }
+
+    if (product.sellerId._id === user.id) {
+      alert('You cannot add your own item to cart');
+      return;
+    }
+
+    if (product.status !== 'available') {
+      alert('This item is no longer available');
+      return;
+    }
+
+    try {
+      setAddingToCart(true);
+      await api.post('/cart/add', {
+        productId: product._id,
+        quantity: 1,
+        size: product.size,
+        productType: 'ResellProduct'
+      });
+      alert('Item added to cart successfully!');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to add item to cart');
+    } finally {
+      setAddingToCart(false);
+    }
+  };
 
   const handlePurchase = async () => {
     if (!user) {
@@ -254,13 +288,22 @@ const ResellProductDetails = () => {
                   )}
                 </>
               ) : (
-                <button 
-                  className="product-action-btn primary" 
-                  disabled={!isAvailable || purchasing}
-                  onClick={handlePurchase}
-                >
-                  {purchasing ? 'Processing...' : isAvailable ? 'Purchase Item' : 'Sold Out'}
-                </button>
+                <>
+                  <button 
+                    className="product-action-btn primary" 
+                    disabled={!isAvailable || addingToCart}
+                    onClick={handleAddToCart}
+                  >
+                    {addingToCart ? 'Adding...' : isAvailable ? 'Add to Cart' : 'Sold Out'}
+                  </button>
+                  <button 
+                    className="product-action-btn secondary" 
+                    disabled={!isAvailable || purchasing}
+                    onClick={handlePurchase}
+                  >
+                    {purchasing ? 'Processing...' : isAvailable ? 'Buy Now' : 'Sold Out'}
+                  </button>
+                </>
               )}
               <Link 
                 to="/resell" 
