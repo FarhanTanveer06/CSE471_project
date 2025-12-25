@@ -28,6 +28,8 @@ const ProductDetails = () => {
   const [addingToWishlist, setAddingToWishlist] = useState(false);
   const [weather, setWeather] = useState(null);
   const [cartSuccessMessage, setCartSuccessMessage] = useState('');
+  const [previewSuccessMessage, setPreviewSuccessMessage] = useState('');
+  const [previewErrorMessage, setPreviewErrorMessage] = useState('');
 
   // Scroll to top when component mounts or product ID changes
   useEffect(() => {
@@ -422,12 +424,22 @@ const ProductDetails = () => {
 
     try {
       setAddingToPreview(true);
+      setPreviewErrorMessage(''); // Clear any previous error
       await api.post('/preview/add', {
         productId: product._id
       });
-      alert('Item added to preview successfully!');
+      setPreviewSuccessMessage('Item added to preview successfully!');
+      // Auto-hide the message after 3 seconds
+      setTimeout(() => {
+        setPreviewSuccessMessage('');
+      }, 3000);
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to add item to preview');
+      const errorMessage = err.response?.data?.message || 'Failed to add item to preview';
+      setPreviewErrorMessage(errorMessage);
+      // Auto-hide the error message after 5 seconds
+      setTimeout(() => {
+        setPreviewErrorMessage('');
+      }, 5000);
       console.error('Error adding to preview:', err);
     } finally {
       setAddingToPreview(false);
@@ -616,6 +628,20 @@ const ProductDetails = () => {
               </div>
             )}
 
+            {/* Preview Success Message */}
+            {previewSuccessMessage && (
+              <div className="alert alert-success mt-3 mb-3" role="alert">
+                {previewSuccessMessage}
+              </div>
+            )}
+
+            {/* Preview Error Message */}
+            {previewErrorMessage && (
+              <div className="alert alert-danger mt-3 mb-3" role="alert">
+                {previewErrorMessage}
+              </div>
+            )}
+
             {/* Action Buttons */}
             <div className="product-actions">
               <button 
@@ -631,13 +657,15 @@ const ProductDetails = () => {
                         : 'Add to Cart')
                     : 'Out of Stock'}
               </button>
-              <button 
-                className="product-action-btn secondary"
-                disabled={addingToPreview}
-                onClick={handleAddToPreview}
-              >
-                {addingToPreview ? 'Adding...' : 'Add to Preview'}
-              </button>
+              {product.category?.toLowerCase() !== 'panjabi' && (
+                <button 
+                  className="product-action-btn secondary"
+                  disabled={addingToPreview}
+                  onClick={handleAddToPreview}
+                >
+                  {addingToPreview ? 'Adding...' : 'Add to Preview'}
+                </button>
+              )}
               <button 
                 className={`product-action-btn secondary ${inWishlist ? 'in-wishlist' : ''}`}
                 disabled={addingToWishlist}
