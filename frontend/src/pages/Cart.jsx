@@ -183,7 +183,18 @@ const Cart = () => {
                   
                   const itemQuantity = Number(item.quantity) || 1;
                   const attemptedQuantity = attemptedQuantities[item._id];
-                  const quantityToCheck = attemptedQuantity !== undefined ? attemptedQuantity : itemQuantity;
+                  const inputQuantity = inputQuantities[item._id];
+                  // Check inputQuantity first (user is typing), then attemptedQuantity, then current quantity
+                  // If inputQuantity is empty string or invalid, ignore it and use fallback
+                  let quantityToCheck = itemQuantity;
+                  if (inputQuantity !== undefined && inputQuantity !== '') {
+                    const numInputQty = Number(inputQuantity);
+                    if (!isNaN(numInputQty) && numInputQty >= 1) {
+                      quantityToCheck = numInputQty;
+                    }
+                  } else if (attemptedQuantity !== undefined) {
+                    quantityToCheck = attemptedQuantity;
+                  }
                   const isStockInsufficient = !isResellProduct && productAvailability > 0 && quantityToCheck > productAvailability;
                   const isResellUnavailable = isResellProduct && product.status !== 'available';
                   
@@ -277,12 +288,14 @@ const Cart = () => {
                                   onBlur={(e) => {
                                     const val = parseInt(e.target.value) || 1;
                                     const maxQuantity = productAvailability > 0 ? productAvailability : 999;
+                                    // Automatically cap to stock number if exceeds
                                     const finalVal = Math.min(Math.max(1, val), maxQuantity);
                                     setInputQuantities(prev => {
                                       const newState = { ...prev };
                                       delete newState[item._id];
                                       return newState;
                                     });
+                                    // Update quantity to capped value (stock number if exceeds stock)
                                     if (finalVal !== item.quantity) {
                                       updateQuantity(item._id, finalVal);
                                     }
