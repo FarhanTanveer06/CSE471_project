@@ -150,13 +150,13 @@ async function analyzeSkinFromFace(imagePath, faceRect) {
 
   // Determine skin tone based on brightness thresholds
   let skinTone;
-  if (brightness > 160) {
+  if (brightness > 132) {
     skinTone = 'light';
-  } else if (brightness > 140) {
-    skinTone = 'medium-light';
   } else if (brightness > 125) {
+    skinTone = 'medium-light';
+  } else if (brightness > 118) {
     skinTone = 'medium';
-  } else if (brightness > 100) {
+  } else if (brightness > 105) {
     skinTone = 'medium-dark';
   } else {
     skinTone = 'dark';
