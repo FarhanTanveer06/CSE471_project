@@ -1,8 +1,10 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
 import '../styles/skinToneAnalysis.css';
+
+const STORAGE_KEY = 'skinToneAnalysisResults';
 
 const SkinToneAnalysis = () => {
   const { user } = useContext(AuthContext);
@@ -15,6 +17,39 @@ const SkinToneAnalysis = () => {
   const [error, setError] = useState(null);
   const [recommendedProducts, setRecommendedProducts] = useState([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
+
+  // Load saved results from localStorage on component mount
+  useEffect(() => {
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    if (savedData) {
+      try {
+        const parsed = JSON.parse(savedData);
+        if (parsed.preview) {
+          setPreview(parsed.preview);
+        }
+        if (parsed.analysis) {
+          setAnalysis(parsed.analysis);
+        }
+        if (parsed.recommendedProducts && parsed.recommendedProducts.length > 0) {
+          setRecommendedProducts(parsed.recommendedProducts);
+        }
+      } catch (err) {
+        console.error('Error loading saved analysis:', err);
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    }
+  }, []);
+
+  // Clear saved results when user logs out
+  useEffect(() => {
+    if (!user) {
+      localStorage.removeItem(STORAGE_KEY);
+      setAnalysis(null);
+      setPreview(null);
+      setRecommendedProducts([]);
+      setSelectedImage(null);
+    }
+  }, [user]);
 
   const handleImageSelect = (e) => {
     const file = e.target.files[0];
@@ -32,8 +67,11 @@ const SkinToneAnalysis = () => {
 
     setSelectedImage(file);
     setError(null);
+    // Clear analysis and products when new image is selected (user is starting fresh)
     setAnalysis(null);
     setRecommendedProducts([]);
+    // Clear saved results when new image is selected
+    localStorage.removeItem(STORAGE_KEY);
 
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -68,7 +106,15 @@ const SkinToneAnalysis = () => {
       });
 
       setAnalysis(response.data);
-      await fetchRecommendedProducts(response.data.recommendedColors.best);
+      const products = await fetchRecommendedProducts(response.data.recommendedColors.best);
+      
+      // Save results to localStorage (including preview)
+      const dataToSave = {
+        preview: preview, // Save the preview image data URL
+        analysis: response.data,
+        recommendedProducts: products
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
 
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to analyze image. Please try again.');
@@ -89,8 +135,10 @@ const SkinToneAnalysis = () => {
       );
 
       setRecommendedProducts(filtered);
+      return filtered; // Return products for saving
     } catch (err) {
       // Failed to fetch products
+      return [];
     } finally {
       setLoadingProducts(false);
     }
@@ -118,6 +166,8 @@ const SkinToneAnalysis = () => {
                         setPreview(null);
                         setAnalysis(null);
                         setRecommendedProducts([]);
+                        // Clear saved results from localStorage
+                        localStorage.removeItem(STORAGE_KEY);
                       }}
                     >
                       Remove Image

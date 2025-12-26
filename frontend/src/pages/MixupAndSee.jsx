@@ -12,6 +12,9 @@ const MixupAndSee = () => {
   const [selectedSizes, setSelectedSizes] = useState({}); // Track selected size per item
   const [currentTopIndex, setCurrentTopIndex] = useState(0);
   const [currentBottomIndex, setCurrentBottomIndex] = useState(0);
+  const [cartSuccessMessages, setCartSuccessMessages] = useState({}); // Track success messages per item
+  const [clearSuccessMessage, setClearSuccessMessage] = useState(''); // Track clear all success message
+  const [showClearConfirmModal, setShowClearConfirmModal] = useState(false); // Track clear confirmation modal
 
   useEffect(() => {
     // Wait for auth to load before checking
@@ -49,22 +52,31 @@ const MixupAndSee = () => {
     }
   };
 
-  const handleClearPreview = async () => {
+  const handleClearPreviewClick = () => {
     if (previewItems.length === 0) return;
-    
-    if (!window.confirm('Are you sure you want to clear all items from preview?')) {
-      return;
-    }
+    setShowClearConfirmModal(true);
+  };
 
+  const handleClearPreviewConfirm = async () => {
+    setShowClearConfirmModal(false);
+    
     try {
       await api.delete('/preview/clear');
       setPreviewItems([]);
       setCurrentTopIndex(0);
       setCurrentBottomIndex(0);
-      alert('All items cleared from preview successfully!');
+      setClearSuccessMessage('All items cleared from preview successfully!');
+      // Auto-hide the message after 3 seconds
+      setTimeout(() => {
+        setClearSuccessMessage('');
+      }, 3000);
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to clear preview');
     }
+  };
+
+  const handleClearPreviewCancel = () => {
+    setShowClearConfirmModal(false);
   };
 
   // Filter items once using useMemo
@@ -113,7 +125,15 @@ const MixupAndSee = () => {
         quantity: 1,
         size: sizeToUse
       });
-      alert('Item added to cart successfully!');
+      setCartSuccessMessages(prev => ({ ...prev, [itemId]: 'Item added to cart successfully!' }));
+      // Auto-hide the message after 3 seconds
+      setTimeout(() => {
+        setCartSuccessMessages(prev => {
+          const newState = { ...prev };
+          delete newState[itemId];
+          return newState;
+        });
+      }, 3000);
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to add item to cart');
     } finally {
@@ -265,6 +285,13 @@ const MixupAndSee = () => {
                             </div>
                           )}
 
+                          {/* Cart Success Message */}
+                          {cartSuccessMessages[item._id] && (
+                            <div className="alert alert-success mt-2 mb-2" role="alert">
+                              {cartSuccessMessages[item._id]}
+                            </div>
+                          )}
+
                           <div className="mixup-item-actions">
                             <button
                               className="btn btn-primary btn-sm"
@@ -363,6 +390,13 @@ const MixupAndSee = () => {
                             </div>
                           )}
 
+                          {/* Cart Success Message */}
+                          {cartSuccessMessages[item._id] && (
+                            <div className="alert alert-success mt-2 mb-2" role="alert">
+                              {cartSuccessMessages[item._id]}
+                            </div>
+                          )}
+
                           <div className="mixup-item-actions">
                             <button
                               className="btn btn-primary btn-sm"
@@ -407,15 +441,50 @@ const MixupAndSee = () => {
           </div>
         </div>
 
+        {/* Clear All Success Message */}
+        {clearSuccessMessage && (
+          <div className="mixup-clear-all-container">
+            <div className="alert alert-success" role="alert">
+              {clearSuccessMessage}
+            </div>
+          </div>
+        )}
+
         {/* Clear All Button - Only shows when there are items */}
         {previewItems.length > 0 && (
           <div className="mixup-clear-all-container">
             <button
               className="btn btn-danger btn-sm mixup-clear-all-button"
-              onClick={handleClearPreview}
+              onClick={handleClearPreviewClick}
             >
               Clear All Items
             </button>
+          </div>
+        )}
+
+        {/* Clear Confirmation Modal */}
+        {showClearConfirmModal && (
+          <div className="mixup-modal-overlay" onClick={handleClearPreviewCancel}>
+            <div className="mixup-modal-content" onClick={(e) => e.stopPropagation()}>
+              <h5 className="mixup-modal-title">Confirm Clear All</h5>
+              <p className="mixup-modal-message">
+                Are you sure you want to clear all items from preview?
+              </p>
+              <div className="mixup-modal-actions">
+                <button
+                  className="btn btn-secondary mixup-modal-btn"
+                  onClick={handleClearPreviewCancel}
+                >
+                  No
+                </button>
+                <button
+                  className="btn btn-danger mixup-modal-btn"
+                  onClick={handleClearPreviewConfirm}
+                >
+                  Yes
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
