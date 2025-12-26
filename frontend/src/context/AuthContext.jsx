@@ -74,6 +74,8 @@ const AuthProvider = ({ children }) => {
       setToken(null);
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      // Clear skin tone analysis results on logout
+      localStorage.removeItem('skinToneAnalysisResults');
     }
   };
 
