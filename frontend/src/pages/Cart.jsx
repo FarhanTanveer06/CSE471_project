@@ -13,6 +13,10 @@ const Cart = () => {
   const [updating, setUpdating] = useState({});
   const [attemptedQuantities, setAttemptedQuantities] = useState({});
   const [inputQuantities, setInputQuantities] = useState({});
+  const [showRemoveModal, setShowRemoveModal] = useState(false);
+  const [itemToRemove, setItemToRemove] = useState(null);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const cleanErrorMessage = (message) => {
     return message.replace(/http:\/\/localhost:\d+/gi, '').replace(/localhost/gi, '').trim() || message;
@@ -25,6 +29,33 @@ const Cart = () => {
     }
     fetchCart();
   }, [user]);
+
+  // Handle ESC key to close modals and prevent body scroll
+  useEffect(() => {
+    const handleEsc = (event) => {
+      if (event.key === 'Escape') {
+        if (showRemoveModal) {
+          setShowRemoveModal(false);
+          setItemToRemove(null);
+        }
+        if (showErrorModal) {
+          setShowErrorModal(false);
+          setErrorMessage('');
+        }
+      }
+    };
+
+    if (showRemoveModal || showErrorModal) {
+      document.addEventListener('keydown', handleEsc);
+      // Prevent body scroll when modal is open
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEsc);
+      document.body.style.overflow = 'unset';
+    };
+  }, [showRemoveModal, showErrorModal]);
 
   const fetchCart = async () => {
     try {
@@ -73,20 +104,38 @@ const Cart = () => {
     }
   };
 
-  const removeItem = async (itemId) => {
-    if (!window.confirm('Are you sure you want to remove this item from cart?')) {
-      return;
-    }
+  const handleRemoveClick = (itemId) => {
+    setItemToRemove(itemId);
+    setShowRemoveModal(true);
+  };
+
+  const confirmRemoveItem = async () => {
+    if (!itemToRemove) return;
+    
+    setShowRemoveModal(false);
     
     try {
-      const response = await api.delete(`/cart/item/${itemId}`);
+      const response = await api.delete(`/cart/item/${itemToRemove}`);
       setCart(response.data);
+      setItemToRemove(null);
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Failed to remove item';
-      alert(cleanErrorMessage(errorMessage));
+      const errorMsg = err.response?.data?.message || 'Failed to remove item';
+      setErrorMessage(cleanErrorMessage(errorMsg));
+      setShowErrorModal(true);
       console.error('Error removing item:', err);
       fetchCart();
+      setItemToRemove(null);
     }
+  };
+
+  const closeRemoveModal = () => {
+    setShowRemoveModal(false);
+    setItemToRemove(null);
+  };
+
+  const closeErrorModal = () => {
+    setShowErrorModal(false);
+    setErrorMessage('');
   };
 
   const clearCart = async () => {
@@ -334,7 +383,7 @@ const Cart = () => {
                         <div className="col-md-2 text-end">
                           <button
                             className="btn btn-outline-danger btn-sm"
-                            onClick={() => removeItem(item._id)}
+                            onClick={() => handleRemoveClick(item._id)}
                           >
                             Remove
                           </button>
@@ -381,6 +430,51 @@ const Cart = () => {
           </div>
         </>
       )}
+
+      {/* Remove Confirmation Modal */}
+      <div className={`modal fade ${showRemoveModal ? 'show' : ''}`} style={{ display: showRemoveModal ? 'block' : 'none' }} tabIndex="-1" role="dialog">
+        <div className="modal-dialog modal-dialog-centered" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Remove Item</h5>
+              <button type="button" className="btn-close" onClick={closeRemoveModal} aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+              <p>Are you sure you want to remove this item from cart?</p>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" onClick={closeRemoveModal}>
+                Cancel
+              </button>
+              <button type="button" className="btn btn-danger" onClick={confirmRemoveItem}>
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {showRemoveModal && <div className="modal-backdrop fade show" onClick={closeRemoveModal}></div>}
+
+      {/* Error Modal */}
+      <div className={`modal fade ${showErrorModal ? 'show' : ''}`} style={{ display: showErrorModal ? 'block' : 'none' }} tabIndex="-1" role="dialog">
+        <div className="modal-dialog modal-dialog-centered" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Error</h5>
+              <button type="button" className="btn-close" onClick={closeErrorModal} aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+              <p>{errorMessage || 'An error occurred'}</p>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-primary" onClick={closeErrorModal}>
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {showErrorModal && <div className="modal-backdrop fade show" onClick={closeErrorModal}></div>}
     </div>
   );
 };

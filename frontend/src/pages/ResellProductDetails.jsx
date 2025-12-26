@@ -14,6 +14,7 @@ const ResellProductDetails = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [purchasing, setPurchasing] = useState(false);
   const [addingToCart, setAddingToCart] = useState(false);
+  const [cartSuccessMessage, setCartSuccessMessage] = useState('');
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -59,7 +60,11 @@ const ResellProductDetails = () => {
         size: product.size,
         productType: 'ResellProduct'
       });
-      alert('Item added to cart successfully!');
+      setCartSuccessMessage('Item added to cart successfully!');
+      // Auto-hide the message after 3 seconds
+      setTimeout(() => {
+        setCartSuccessMessage('');
+      }, 3000);
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to add item to cart');
     } finally {
@@ -258,6 +263,13 @@ const ResellProductDetails = () => {
                 </table>
               </div>
             </div>
+
+            {/* Cart Success Message */}
+            {cartSuccessMessage && (
+              <div className="alert alert-success mt-3 mb-3" role="alert">
+                {cartSuccessMessage}
+              </div>
+            )}
 
             <div className="product-actions">
               {isOwner ? (
