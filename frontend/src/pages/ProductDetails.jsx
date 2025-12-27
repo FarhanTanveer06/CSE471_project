@@ -339,16 +339,16 @@ const ProductDetails = () => {
       }
     } else if (temperature >= 20) {
       // Mild/Pleasant (20-25°C) - Late winter/early spring
-      if (gsm >= 150 && gsm < 200) {
+      if (gsm >= 181 && gsm < 251) {
         return { message: 'Perfect with your weather', status: 'perfect' };
-      } else if (gsm < 150) {
+      } else if (gsm <= 180) {
         return { message: 'Too light for your weather', status: 'too-light' };
       } else {
         return { message: 'Too heavy for your weather', status: 'too-heavy' };
       }
     } else {
       // Cold (Below 20°C) - Winter
-      if (gsm >= 200) {
+      if (gsm >= 251) {
         return { message: 'Perfect with your weather', status: 'perfect' };
       }  else {
         return { message: 'Too light for your weather', status: 'too-light' };
