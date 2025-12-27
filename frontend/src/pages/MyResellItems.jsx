@@ -11,7 +11,6 @@ const MyResellItems = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showSoldModal, setShowSoldModal] = useState(false);
   const [productToAction, setProductToAction] = useState(null);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -47,10 +46,6 @@ const MyResellItems = () => {
           setShowDeleteModal(false);
           setProductToAction(null);
         }
-        if (showSoldModal) {
-          setShowSoldModal(false);
-          setProductToAction(null);
-        }
         if (showErrorModal) {
           setShowErrorModal(false);
           setErrorMessage('');
@@ -58,7 +53,7 @@ const MyResellItems = () => {
       }
     };
 
-    if (showDeleteModal || showSoldModal || showErrorModal) {
+    if (showDeleteModal || showErrorModal) {
       document.addEventListener('keydown', handleEsc);
       document.body.style.overflow = 'hidden';
     }
@@ -67,7 +62,7 @@ const MyResellItems = () => {
       document.removeEventListener('keydown', handleEsc);
       document.body.style.overflow = 'unset';
     };
-  }, [showDeleteModal, showSoldModal, showErrorModal]);
+  }, [showDeleteModal, showErrorModal]);
 
   const cleanErrorMessage = (message) => {
     return message.replace(/http:\/\/localhost:\d+/gi, '').replace(/localhost/gi, '').trim() || message;
@@ -101,37 +96,6 @@ const MyResellItems = () => {
 
   const closeDeleteModal = () => {
     setShowDeleteModal(false);
-    setProductToAction(null);
-  };
-
-  const handleMarkAsSoldClick = (productId) => {
-    setProductToAction(productId);
-    setShowSoldModal(true);
-  };
-
-  const confirmMarkAsSold = async () => {
-    if (!productToAction) return;
-    
-    setShowSoldModal(false);
-    const productId = productToAction;
-    setProductToAction(null);
-    
-    try {
-      const response = await api.post(`/resell/${productId}/sold`);
-      setProducts(products.map(p => p._id === productId ? response.data : p));
-      setSuccessMessage('Item marked as sold!');
-      setTimeout(() => {
-        setSuccessMessage('');
-      }, 3000);
-    } catch (err) {
-      const errorMsg = err.response?.data?.message || 'Failed to update status';
-      setErrorMessage(cleanErrorMessage(errorMsg));
-      setShowErrorModal(true);
-    }
-  };
-
-  const closeSoldModal = () => {
-    setShowSoldModal(false);
     setProductToAction(null);
   };
 
@@ -222,14 +186,6 @@ const MyResellItems = () => {
                     >
                       View
                     </Link>
-                    {product.status === 'available' && (
-                      <button
-                        className="btn btn-sm btn-outline-warning flex-fill"
-                        onClick={() => handleMarkAsSoldClick(product._id)}
-                      >
-                        Mark Sold
-                      </button>
-                    )}
                     <button
                       className="btn btn-sm btn-outline-danger flex-fill"
                       onClick={() => handleDeleteClick(product._id)}
@@ -267,30 +223,6 @@ const MyResellItems = () => {
         </div>
       </div>
       {showDeleteModal && <div className="modal-backdrop fade show" onClick={closeDeleteModal}></div>}
-
-      {/* Mark as Sold Confirmation Modal */}
-      <div className={`modal fade ${showSoldModal ? 'show' : ''}`} style={{ display: showSoldModal ? 'block' : 'none' }} tabIndex="-1" role="dialog">
-        <div className="modal-dialog modal-dialog-centered" role="document">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">Mark as Sold</h5>
-              <button type="button" className="btn-close" onClick={closeSoldModal} aria-label="Close"></button>
-            </div>
-            <div className="modal-body">
-              <p>Mark this item as sold? This will update the status and prevent further purchases.</p>
-            </div>
-            <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" onClick={closeSoldModal}>
-                Cancel
-              </button>
-              <button type="button" className="btn btn-warning" onClick={confirmMarkAsSold}>
-                Mark as Sold
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      {showSoldModal && <div className="modal-backdrop fade show" onClick={closeSoldModal}></div>}
 
       {/* Error Modal */}
       <div className={`modal fade ${showErrorModal ? 'show' : ''}`} style={{ display: showErrorModal ? 'block' : 'none' }} tabIndex="-1" role="dialog">
