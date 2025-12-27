@@ -43,6 +43,25 @@ exports.addToPreview = async (req, res) => {
       return res.status(400).json({ message: 'Item already in preview' });
     }
     
+    // Populate existing items to check categories
+    await preview.populate('items.productId');
+    
+    // Check category limits: 2 top items (non-pants) and 2 bottom items (pants)
+    const isPants = product.category === 'pants';
+    const itemsInSameCategory = preview.items.filter(item => {
+      const itemProduct = item.productId;
+      if (!itemProduct) return false;
+      if (isPants) {
+        return itemProduct.category === 'pants';
+      } else {
+        return itemProduct.category !== 'pants';
+      }
+    });
+    
+    if (itemsInSameCategory.length >= 2) {
+      return res.status(400).json({ message: 'you can add only 2 items' });
+    }
+    
     // Add new item
     preview.items.push({ productId });
     

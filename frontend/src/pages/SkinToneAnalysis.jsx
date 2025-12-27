@@ -262,9 +262,9 @@ const SkinToneAnalysis = () => {
         {recommendedProducts.length > 0 && (
           <div className="recommended-products mt-5">
             <h3 className="mb-4">Recommended Products for You</h3>
-            <div className="row">
+            <div className="recommended-products-row">
               {recommendedProducts.map(product => (
-                <div key={product._id} className="col-md-3 mb-4">
+                <div key={product._id} className="recommended-product-col">
                   <div className="product-card">
                     <img 
                       src={product.images[0]} 
