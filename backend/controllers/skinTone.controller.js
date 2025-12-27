@@ -168,7 +168,7 @@ async function analyzeSkinFromFace(imagePath, faceRect) {
   };
 }
 
-// Get recommended colors based on skin tone (optimized for Bangladeshi skin tones)
+// Get recommended colors based on skin tone 
 function getRecommendedColorsByBrightness(skinBrightness, skinTone) {
   const colorRecommendations = {
     'dark': {

@@ -304,16 +304,11 @@ const ProductDetails = () => {
     ? `${product.availability} in stock` 
     : 'Out of stock';
 
-  // Function to determine GSM suitability based on Bangladesh temperature feelings
+  // Function to determine GSM suitability 
   const getGSMSuitability = (gsm, temperature) => {
     if (!gsm || !temperature) return null;
 
-    // Bangladesh Temperature Feelings:
-    // Below 15°C (Cold) - Winter - Need heavy fabric (200+ GSM) - jackets, sweaters
-    // 15-25°C (Mild/Pleasant) - Late winter/early spring - Medium fabric (150-200 GSM) - light sweater
-    // 25-30°C (Warm) - Spring/early summer - Light fabric (100-150 GSM) - short sleeves, cotton
-    // 30-35°C (Hot) - Peak summer - Very light fabric (<150 GSM, preferably <120) - light cotton
-    // Above 35°C (Very Hot) - Heatwaves - Very light fabric (<120 GSM) - very light clothing
+    
 
     if (temperature >= 35) {
       // Very Hot (Above 35°C) - Heatwaves
