@@ -15,6 +15,7 @@ const ResellProductDetails = () => {
   const [purchasing, setPurchasing] = useState(false);
   const [addingToCart, setAddingToCart] = useState(false);
   const [cartSuccessMessage, setCartSuccessMessage] = useState('');
+  const [cartErrorMessage, setCartErrorMessage] = useState('');
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -54,6 +55,7 @@ const ResellProductDetails = () => {
 
     try {
       setAddingToCart(true);
+      setCartErrorMessage(''); // Clear any previous error
       await api.post('/cart/add', {
         productId: product._id,
         quantity: 1,
@@ -66,7 +68,14 @@ const ResellProductDetails = () => {
         setCartSuccessMessage('');
       }, 3000);
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to add item to cart');
+      const errorMsg = err.response?.data?.message || 'Failed to add item to cart';
+      // Clean localhost URLs from error message
+      const cleanErrorMsg = errorMsg.replace(/http:\/\/localhost:\d+/gi, '').replace(/localhost/gi, '').trim() || errorMsg;
+      setCartErrorMessage(cleanErrorMsg);
+      // Auto-hide the error message after 5 seconds
+      setTimeout(() => {
+        setCartErrorMessage('');
+      }, 5000);
     } finally {
       setAddingToCart(false);
     }
@@ -271,34 +280,21 @@ const ResellProductDetails = () => {
               </div>
             )}
 
+            {/* Cart Error Message */}
+            {cartErrorMessage && (
+              <div className="alert alert-warning mt-3 mb-3" role="alert">
+                {cartErrorMessage}
+              </div>
+            )}
+
             <div className="product-actions">
               {isOwner ? (
-                <>
-                  <Link 
-                    to="/resell/my-items" 
-                    className="product-action-btn secondary"
-                  >
-                    View My Items
-                  </Link>
-                  {isAvailable && (
-                    <button 
-                      className="product-action-btn secondary"
-                      onClick={async () => {
-                        if (window.confirm('Mark this item as sold?')) {
-                          try {
-                            await api.post(`/resell/${id}/sold`);
-                            alert('Item marked as sold');
-                            window.location.reload();
-                          } catch (err) {
-                            alert(err.response?.data?.message || 'Failed to update status');
-                          }
-                        }
-                      }}
-                    >
-                      Mark as Sold
-                    </button>
-                  )}
-                </>
+                <Link 
+                  to="/resell/my-items" 
+                  className="product-action-btn secondary"
+                >
+                  View My Items
+                </Link>
               ) : (
                 <>
                   <button 

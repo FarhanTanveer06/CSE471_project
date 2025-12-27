@@ -28,6 +28,7 @@ const ProductDetails = () => {
   const [addingToWishlist, setAddingToWishlist] = useState(false);
   const [weather, setWeather] = useState(null);
   const [cartSuccessMessage, setCartSuccessMessage] = useState('');
+  const [cartErrorMessage, setCartErrorMessage] = useState('');
   const [previewSuccessMessage, setPreviewSuccessMessage] = useState('');
   const [previewErrorMessage, setPreviewErrorMessage] = useState('');
 
@@ -390,6 +391,7 @@ const ProductDetails = () => {
 
     try {
       setAddingToCart(true);
+      setCartErrorMessage(''); // Clear any previous error
       await api.post('/cart/add', {
         productId: product._id,
         quantity: 1,
@@ -401,7 +403,14 @@ const ProductDetails = () => {
         setCartSuccessMessage('');
       }, 3000);
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to add item to cart');
+      const errorMsg = err.response?.data?.message || 'Failed to add item to cart';
+      // Clean localhost URLs from error message
+      const cleanErrorMsg = errorMsg.replace(/http:\/\/localhost:\d+/gi, '').replace(/localhost/gi, '').trim() || errorMsg;
+      setCartErrorMessage(cleanErrorMsg);
+      // Auto-hide the error message after 5 seconds
+      setTimeout(() => {
+        setCartErrorMessage('');
+      }, 5000);
       console.error('Error adding to cart:', err);
     } finally {
       setAddingToCart(false);
@@ -618,6 +627,13 @@ const ProductDetails = () => {
             {cartSuccessMessage && (
               <div className="alert alert-success mt-3 mb-3" role="alert">
                 {cartSuccessMessage}
+              </div>
+            )}
+
+            {/* Cart Error Message */}
+            {cartErrorMessage && (
+              <div className="alert alert-warning mt-3 mb-3" role="alert">
+                {cartErrorMessage}
               </div>
             )}
 
