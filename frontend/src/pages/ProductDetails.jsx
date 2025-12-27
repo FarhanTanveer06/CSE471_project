@@ -348,7 +348,7 @@ const ProductDetails = () => {
       }
     } else {
       // Cold (Below 20°C) - Winter
-      if (gsm >= 250) {
+      if (gsm >= 251) {
         return { message: 'Perfect with your weather', status: 'perfect' };
       }  else {
         return { message: 'Too light for your weather', status: 'too-light' };
